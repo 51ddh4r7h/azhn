@@ -1,0 +1,3972 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>AZHN — Enterprise Dashboard Ecosystem</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --surface-primary: #ffffff;
+                --surface-secondary: #f4f5f5;
+                --text-primary: #0c0d0f;
+                --text-secondary: #565553;
+                --brand-turquoise: #00ced1;
+                --status-mint: #157a64;
+                --status-error: #44152e;
+                --status-warning: #3f1538;
+                --ui-border: #aaa6ae;
+                --ui-border-light: #e0dde3;
+                --font-mono: "JetBrains Mono", monospace;
+                --font-sans: "DM Sans", sans-serif;
+                --font-display: "Syne", sans-serif;
+                --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: var(--font-sans);
+                background: var(--surface-secondary);
+                color: var(--text-primary);
+                overflow-x: hidden;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            /* ── HEADER ── */
+            .header {
+                background: var(--surface-primary);
+                border-bottom: 1px solid var(--ui-border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+                height: 48px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .header-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .brand-badge {
+                background: var(--text-primary);
+                color: var(--surface-primary);
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 700;
+                padding: 2px 7px;
+                letter-spacing: 0.08em;
+            }
+            .brand-name {
+                font-family: var(--font-display);
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--text-primary);
+                letter-spacing: -0.02em;
+            }
+            .brand-sub {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-secondary);
+                letter-spacing: 0.04em;
+            }
+            .header-meta {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+            .live-badge {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--status-mint);
+                font-weight: 600;
+            }
+            .live-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--status-mint);
+                animation: pulse 1.4s ease-in-out infinite;
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.3;
+                }
+            }
+            .header-clock {
+                font-family: var(--font-mono);
+                font-size: 11px;
+                color: var(--text-secondary);
+            }
+            .header-stat {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-secondary);
+                border-left: 1px solid var(--ui-border);
+                padding-left: 14px;
+            }
+            .header-stat span {
+                color: var(--brand-turquoise);
+                font-weight: 600;
+            }
+
+            /* ── NAV TABS ── */
+            .nav-tabs {
+                background: var(--surface-primary);
+                border-bottom: 1px solid var(--ui-border);
+                display: flex;
+                padding: 0 20px;
+                gap: 0;
+                overflow-x: auto;
+            }
+            .nav-tab {
+                padding: 10px 18px;
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 500;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--text-secondary);
+                border-bottom: 2px solid transparent;
+                cursor: pointer;
+                transition: all var(--transition);
+                white-space: nowrap;
+                user-select: none;
+                border-right: 1px solid var(--ui-border-light);
+            }
+            .nav-tab:hover {
+                color: var(--text-primary);
+                background: var(--surface-secondary);
+            }
+            .nav-tab.active {
+                color: var(--brand-turquoise);
+                border-bottom: 2px solid var(--brand-turquoise);
+                background: var(--surface-primary);
+                font-weight: 700;
+            }
+
+            /* ── DASHBOARD VIEWS ── */
+            .dashboard {
+                display: none;
+                padding: 0;
+            }
+            .dashboard.active {
+                display: block;
+            }
+
+            /* ── BENTO GRID ── */
+            .bento {
+                display: grid;
+                gap: 1px;
+                background: var(--ui-border);
+                border: 1px solid var(--ui-border);
+                margin: 16px;
+                border-radius: 2px;
+                overflow: hidden;
+            }
+            .bento-5col {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .bento-4col {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .bento-3col {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .bento-2col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card {
+                background: var(--surface-primary);
+                padding: 14px;
+                position: relative;
+                overflow: hidden;
+            }
+            .card-sm {
+                min-height: 110px;
+            }
+            .card-md {
+                min-height: 170px;
+            }
+            .card-lg {
+                min-height: 240px;
+            }
+            .card-xl {
+                min-height: 310px;
+            }
+
+            .card:hover {
+                background: #fafafa;
+            }
+
+            .card-label {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--text-secondary);
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .card-label::before {
+                content: "";
+                width: 6px;
+                height: 6px;
+                background: var(--brand-turquoise);
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .card-label.err::before {
+                background: var(--status-error);
+            }
+            .card-label.mint::before {
+                background: var(--status-mint);
+            }
+            .card-label.warn::before {
+                background: var(--status-warning);
+            }
+
+            .kpi-value {
+                font-family: var(--font-mono);
+                font-size: 32px;
+                font-weight: 700;
+                color: var(--text-primary);
+                line-height: 1;
+                letter-spacing: -0.03em;
+            }
+            .kpi-unit {
+                font-family: var(--font-mono);
+                font-size: 12px;
+                color: var(--text-secondary);
+                font-weight: 400;
+                margin-left: 4px;
+            }
+            .kpi-label {
+                font-size: 11px;
+                color: var(--text-secondary);
+                margin-top: 4px;
+            }
+            .kpi-delta {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                margin-top: 6px;
+                padding: 2px 6px;
+            }
+            .kpi-delta.pos {
+                color: var(--status-mint);
+                background: #157a6415;
+            }
+            .kpi-delta.neg {
+                color: var(--status-error);
+                background: #44152e15;
+            }
+            .kpi-delta.neu {
+                color: var(--brand-turquoise);
+                background: #00ced115;
+            }
+
+            /* ── CHART CONTAINERS ── */
+            .chart-wrap {
+                width: 100%;
+                position: relative;
+            }
+
+            /* ── MINI SPARKLINE ── */
+            .sparkline-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 4px 0;
+                border-bottom: 1px solid var(--ui-border-light);
+                gap: 8px;
+            }
+            .sparkline-row:last-child {
+                border-bottom: none;
+            }
+            .sparkline-name {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-secondary);
+                min-width: 110px;
+            }
+            .sparkline-val {
+                font-family: var(--font-mono);
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--text-primary);
+                min-width: 36px;
+                text-align: right;
+            }
+            .status-pill {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                font-weight: 700;
+                padding: 2px 6px;
+                letter-spacing: 0.06em;
+            }
+            .pill-mint {
+                background: #157a6418;
+                color: var(--status-mint);
+            }
+            .pill-err {
+                background: #44152e18;
+                color: var(--status-error);
+            }
+            .pill-warn {
+                background: #3f153818;
+                color: var(--status-warning);
+            }
+            .pill-turq {
+                background: #00ced118;
+                color: var(--brand-turquoise);
+            }
+
+            /* ── SECTION TITLE ── */
+            .section-title {
+                font-family: var(--font-display);
+                font-size: 20px;
+                font-weight: 800;
+                color: var(--text-primary);
+                letter-spacing: -0.03em;
+                margin: 20px 20px 2px;
+            }
+            .section-desc {
+                font-size: 12px;
+                color: var(--text-secondary);
+                margin: 0 20px 10px;
+            }
+
+            /* ── HERO SECTION ── */
+            .hero {
+                background: var(--text-primary);
+                padding: 48px 20px 36px;
+                position: relative;
+                overflow: hidden;
+            }
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: -60px;
+                right: -60px;
+                width: 400px;
+                height: 400px;
+                background: radial-gradient(
+                    circle,
+                    #00ced130 0%,
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+            .hero-eyebrow {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                color: var(--brand-turquoise);
+                text-transform: uppercase;
+                margin-bottom: 12px;
+            }
+            .hero-title {
+                font-family: var(--font-display);
+                font-size: clamp(28px, 4vw, 52px);
+                font-weight: 800;
+                color: #ffffff;
+                line-height: 1.05;
+                letter-spacing: -0.04em;
+                max-width: 760px;
+                margin-bottom: 16px;
+            }
+            .hero-title em {
+                font-style: normal;
+                color: var(--brand-turquoise);
+            }
+            .hero-desc {
+                font-size: 13px;
+                color: #aaa6ae;
+                max-width: 600px;
+                line-height: 1.6;
+                margin-bottom: 28px;
+            }
+            .hero-stats {
+                display: flex;
+                gap: 0;
+                border: 1px solid #2a2a2a;
+                width: fit-content;
+                flex-wrap: wrap;
+            }
+            .hero-stat {
+                padding: 12px 22px;
+                border-right: 1px solid #2a2a2a;
+            }
+            .hero-stat:last-child {
+                border-right: none;
+            }
+            .hero-stat-val {
+                font-family: var(--font-mono);
+                font-size: 22px;
+                font-weight: 700;
+                color: #ffffff;
+                line-height: 1;
+                letter-spacing: -0.03em;
+            }
+            .hero-stat-val em {
+                color: var(--brand-turquoise);
+                font-style: normal;
+            }
+            .hero-stat-lbl {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: #666;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-top: 4px;
+            }
+
+            /* ── CANVAS CHARTS ── */
+            canvas {
+                display: block;
+            }
+
+            /* ── TABLE ── */
+            .data-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .data-table th {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--text-secondary);
+                padding: 6px 8px;
+                border-bottom: 1px solid var(--ui-border);
+                text-align: left;
+            }
+            .data-table td {
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-primary);
+                padding: 6px 8px;
+                border-bottom: 1px solid var(--ui-border-light);
+            }
+            .data-table tr:last-child td {
+                border-bottom: none;
+            }
+            .data-table tr:hover td {
+                background: var(--surface-secondary);
+            }
+
+            /* ── PROGRESS BAR ── */
+            .prog-bar-wrap {
+                margin-top: 6px;
+            }
+            .prog-bar-row {
+                margin-bottom: 8px;
+            }
+            .prog-bar-header {
+                display: flex;
+                justify-content: space-between;
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: var(--text-secondary);
+                margin-bottom: 3px;
+            }
+            .prog-bar-track {
+                height: 5px;
+                background: var(--ui-border-light);
+                position: relative;
+                overflow: visible;
+            }
+            .prog-bar-fill {
+                height: 100%;
+                position: relative;
+                transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            /* ── RADAR CHART ── */
+            #radarCanvas {
+                background: transparent;
+            }
+
+            /* ── GRID MATRIX ── */
+            .hospital-matrix {
+                display: grid;
+                grid-template-columns: repeat(8, 1fr);
+                gap: 2px;
+                margin-top: 8px;
+            }
+            .matrix-cell {
+                aspect-ratio: 1;
+                position: relative;
+                cursor: pointer;
+                transition: transform 0.15s;
+            }
+            .matrix-cell:hover {
+                transform: scale(1.15);
+                z-index: 2;
+            }
+            .matrix-cell-inner {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--font-mono);
+                font-size: 7px;
+                font-weight: 700;
+                color: white;
+            }
+
+            /* ── GANTT BARS ── */
+            .gantt-wrap {
+                margin-top: 10px;
+            }
+            .gantt-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+                gap: 8px;
+            }
+            .gantt-label {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: var(--text-secondary);
+                width: 120px;
+                text-align: right;
+                flex-shrink: 0;
+            }
+            .gantt-track {
+                flex: 1;
+                height: 18px;
+                background: var(--ui-border-light);
+                position: relative;
+            }
+            .gantt-fill {
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: flex;
+                align-items: center;
+                padding-left: 6px;
+                font-family: var(--font-mono);
+                font-size: 9px;
+                font-weight: 600;
+                color: white;
+                transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .gantt-val {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: var(--text-secondary);
+                min-width: 40px;
+            }
+
+            /* ── FLOW DIAGRAM ── */
+            .flow-nodes {
+                display: flex;
+                gap: 1px;
+                margin-top: 10px;
+                align-items: stretch;
+            }
+            .flow-node {
+                flex: 1;
+                padding: 10px 6px;
+                background: var(--surface-secondary);
+                border: 1px solid var(--ui-border-light);
+                text-align: center;
+                position: relative;
+            }
+            .flow-node::after {
+                content: "→";
+                position: absolute;
+                right: -10px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 12px;
+                color: var(--ui-border);
+                z-index: 1;
+            }
+            .flow-node:last-child::after {
+                display: none;
+            }
+            .flow-node-val {
+                font-family: var(--font-mono);
+                font-size: 13px;
+                font-weight: 700;
+                color: var(--brand-turquoise);
+                line-height: 1;
+            }
+            .flow-node-lbl {
+                font-family: var(--font-mono);
+                font-size: 8px;
+                color: var(--text-secondary);
+                margin-top: 4px;
+                letter-spacing: 0.04em;
+            }
+
+            /* ── TREEMAP ── */
+            #treemapCanvas {
+                cursor: crosshair;
+            }
+
+            /* ── TICKER ── */
+            .ticker-wrap {
+                background: var(--text-primary);
+                overflow: hidden;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                border-top: 1px solid var(--ui-border);
+                margin-top: 1px;
+            }
+            .ticker-label {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: var(--brand-turquoise);
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                padding: 0 14px;
+                white-space: nowrap;
+                border-right: 1px solid #333;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+            }
+            .ticker-track {
+                flex: 1;
+                overflow: hidden;
+                position: relative;
+            }
+            .ticker-inner {
+                display: flex;
+                gap: 40px;
+                animation: ticker 30s linear infinite;
+                white-space: nowrap;
+                font-family: var(--font-mono);
+                font-size: 10px;
+                color: #888;
+            }
+            @keyframes ticker {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-50%);
+                }
+            }
+            .ticker-item {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .ticker-item span {
+                color: var(--brand-turquoise);
+                font-weight: 600;
+            }
+
+            /* ── OVERVIEW DASHBOARD ── */
+            .overview-grid {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1px;
+                background: var(--ui-border);
+                margin: 16px;
+                border: 1px solid var(--ui-border);
+                overflow: hidden;
+            }
+            .ov-card {
+                background: var(--surface-primary);
+                padding: 14px;
+            }
+
+            /* ── CIRCUIT BREAKER ── */
+            .breaker-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .breaker-card {
+                border: 1px solid var(--ui-border-light);
+                padding: 8px;
+                text-align: center;
+            }
+            .breaker-state {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                padding: 2px 6px;
+                margin-top: 4px;
+                display: inline-block;
+            }
+            .breaker-name {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: var(--text-secondary);
+            }
+
+            /* ── SCROLLBAR ── */
+            ::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            ::-webkit-scrollbar-track {
+                background: var(--surface-secondary);
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--ui-border);
+            }
+
+            /* ── TIMELINE ── */
+            .timeline-wrap {
+                margin-top: 8px;
+            }
+            .tl-item {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 8px;
+                align-items: flex-start;
+            }
+            .tl-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--brand-turquoise);
+                flex-shrink: 0;
+                margin-top: 3px;
+            }
+            .tl-dot.err {
+                background: var(--status-error);
+            }
+            .tl-dot.mint {
+                background: var(--status-mint);
+            }
+            .tl-time {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: var(--text-secondary);
+                min-width: 50px;
+            }
+            .tl-text {
+                font-size: 11px;
+                color: var(--text-primary);
+                flex: 1;
+                line-height: 1.4;
+            }
+
+            /* ── SPAN HELPERS ── */
+            .col-span-2 {
+                grid-column: span 2;
+            }
+            .col-span-3 {
+                grid-column: span 3;
+            }
+            .col-span-4 {
+                grid-column: span 4;
+            }
+            .col-span-5 {
+                grid-column: span 5;
+            }
+
+            /* ── ROI BANNER ── */
+            .roi-wrap {
+                margin: 0 16px 16px;
+                background: var(--text-primary);
+                border: 1px solid var(--ui-border);
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1px;
+                overflow: hidden;
+            }
+            .roi-card {
+                padding: 18px 20px;
+                border-right: 1px solid #222;
+            }
+            .roi-card:last-child {
+                border-right: none;
+            }
+            .roi-val {
+                font-family: var(--font-mono);
+                font-size: 28px;
+                font-weight: 700;
+                color: #ffffff;
+                letter-spacing: -0.03em;
+                line-height: 1;
+            }
+            .roi-val em {
+                color: var(--brand-turquoise);
+                font-style: normal;
+            }
+            .roi-lbl {
+                font-family: var(--font-mono);
+                font-size: 9px;
+                color: #666;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-top: 6px;
+            }
+
+            @media (max-width: 900px) {
+                .bento-5col {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .bento-4col {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .bento-3col {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .overview-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .roi-wrap {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .col-span-2,
+                .col-span-3,
+                .col-span-4,
+                .col-span-5 {
+                    grid-column: span 2;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="brand-badge">AZHN</div>
+                <div>
+                    <div class="brand-name">
+                        Aarogya Zenith Healthcare Network
+                    </div>
+                    <div class="brand-sub">
+                        FIVE-LAYER ENTERPRISE DASHBOARD ECOSYSTEM · v2.4.1
+                    </div>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="live-badge">
+                    <div class="live-dot"></div>
+                    LIVE
+                </div>
+                <div class="header-clock" id="clock">--:--:--</div>
+                <div class="header-stat">
+                    32 Hospitals · <span>8,000+ Beds</span>
+                </div>
+                <div class="header-stat">
+                    Network Health <span>99.97%</span>
+                </div>
+                <div class="header-stat">DPDP Compliant <span>✓</span></div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION -->
+        <nav class="nav-tabs">
+            <div class="nav-tab active" onclick="showDash(0)" id="tab0">
+                OVERVIEW
+            </div>
+            <div class="nav-tab" onclick="showDash(1)" id="tab1">
+                L1 · USER EXPERIENCE
+            </div>
+            <div class="nav-tab" onclick="showDash(2)" id="tab2">
+                L2 · API GATEWAY & SECURITY
+            </div>
+            <div class="nav-tab" onclick="showDash(3)" id="tab3">
+                L3 · AI & MICROSERVICES
+            </div>
+            <div class="nav-tab" onclick="showDash(4)" id="tab4">
+                L4 · LEGACY INTEGRATION
+            </div>
+            <div class="nav-tab" onclick="showDash(5)" id="tab5">
+                L5 · CLOUD INFRASTRUCTURE
+            </div>
+        </nav>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 0: OVERVIEW                 -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard active" id="dash0">
+            <div class="hero">
+                <div class="hero-eyebrow">
+                    ENTERPRISE HEALTHCARE · MICROSERVICES ARCHITECTURE · ABDM
+                    COMPLIANT
+                </div>
+                <div class="hero-title">
+                    Five-Layer<br />Observability <em>Ecosystem</em>
+                </div>
+                <div class="hero-desc">
+                    Real-time visualization of 32 independent multi-specialty
+                    hospitals across Tier-1 and Tier-2 Indian cities. Monitoring
+                    200M+ daily telemetry events with zero cognitive overhead.
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-val"><em>8</em>min</div>
+                        <div class="hero-stat-lbl">Discharge Cycle</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val"><em>1,810</em>ms</div>
+                        <div class="hero-stat-lbl">AI Diagnostic</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val"><em>22</em>ms</div>
+                        <div class="hero-stat-lbl">Zero Trust Overhead</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val"><em>25×</em></div>
+                        <div class="hero-stat-lbl">3yr ROI</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val"><em>96.1%</em></div>
+                        <div class="hero-stat-lbl">AI Accuracy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OVERVIEW KPI CARDS -->
+            <div class="overview-grid">
+                <div class="ov-card">
+                    <div class="card-label mint">DISCHARGE VELOCITY</div>
+                    <div class="kpi-value">
+                        8<span class="kpi-unit">min</span>
+                    </div>
+                    <div class="kpi-label">vs. 265min legacy</div>
+                    <div class="kpi-delta pos">↓ 97% reduction</div>
+                </div>
+                <div class="ov-card">
+                    <div class="card-label">AI TURNAROUND</div>
+                    <div class="kpi-value">
+                        1.81<span class="kpi-unit">sec</span>
+                    </div>
+                    <div class="kpi-label">vs. 48hr legacy</div>
+                    <div class="kpi-delta pos">↓ 99.9% reduction</div>
+                </div>
+                <div class="ov-card">
+                    <div class="card-label">BED OCCUPANCY</div>
+                    <div class="kpi-value">
+                        79.5<span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-label">+11.5% from 68%</div>
+                    <div class="kpi-delta pos">↑ 1,472 beds active</div>
+                </div>
+                <div class="ov-card">
+                    <div class="card-label err">WRONG-PATIENT ERRORS</div>
+                    <div class="kpi-value">0</div>
+                    <div class="kpi-label">Consecutive 347 days</div>
+                    <div class="kpi-delta pos">↓ from 12/yr baseline</div>
+                </div>
+                <div class="ov-card">
+                    <div class="card-label mint">STAFF HOURS SAVED</div>
+                    <div class="kpi-value" id="hoursCounter">6,240</div>
+                    <div class="kpi-label">per day / 780 FTE equiv.</div>
+                    <div class="kpi-delta pos">↑ ongoing</div>
+                </div>
+            </div>
+
+            <!-- MAIN OVERVIEW BENTO -->
+            <div class="bento bento-4col">
+                <!-- Network Canvas -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        NETWORK TOPOLOGY · 32 HOSPITAL NODES
+                    </div>
+                    <canvas
+                        id="networkCanvas"
+                        width="520"
+                        height="260"
+                    ></canvas>
+                </div>
+
+                <!-- Layer Health Summary -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label mint">FIVE-LAYER SYSTEM HEALTH</div>
+                    <div class="prog-bar-wrap" style="margin-top: 12px">
+                        <div class="prog-bar-row">
+                            <div class="prog-bar-header">
+                                <span>L1 · User Experience</span
+                                ><span
+                                    style="
+                                        color: var(--status-mint);
+                                        font-weight: 700;
+                                    "
+                                    >99.8%</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 99.8%;
+                                        background: var(--status-mint);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 10px">
+                            <div class="prog-bar-header">
+                                <span>L2 · API Gateway & Security</span
+                                ><span
+                                    style="
+                                        color: var(--status-mint);
+                                        font-weight: 700;
+                                    "
+                                    >100%</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 100%;
+                                        background: var(--status-mint);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 10px">
+                            <div class="prog-bar-header">
+                                <span>L3 · AI & Microservices</span
+                                ><span
+                                    style="
+                                        color: var(--brand-turquoise);
+                                        font-weight: 700;
+                                    "
+                                    >97.4%</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 97.4%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 10px">
+                            <div class="prog-bar-header">
+                                <span>L4 · Legacy Integration</span
+                                ><span
+                                    style="
+                                        color: var(--status-mint);
+                                        font-weight: 700;
+                                    "
+                                    >98.9%</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 98.9%;
+                                        background: var(--status-mint);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 10px">
+                            <div class="prog-bar-header">
+                                <span>L5 · Cloud Infrastructure</span
+                                ><span
+                                    style="
+                                        color: var(--status-mint);
+                                        font-weight: 700;
+                                    "
+                                    >99.97%</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 99.97%;
+                                        background: var(--status-mint);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 18px">
+                        <canvas
+                            id="layerPerfCanvas"
+                            width="520"
+                            height="80"
+                        ></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Events -->
+                <div class="card card-lg col-span-2">
+                    <div class="card-label">LIVE CLINICAL EVENTS</div>
+                    <div class="timeline-wrap" id="eventsFeed">
+                        <div class="tl-item">
+                            <div class="tl-dot mint"></div>
+                            <div class="tl-time">11:23:04</div>
+                            <div class="tl-text">
+                                H07 Mumbai — Discharge initiated for patient
+                                MRN#8821934 by Dr. Priya Nair
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-time">11:23:06</div>
+                            <div class="tl-text">
+                                MuleSoft TPA pre-auth returned APPROVED in 2.2s
+                                — MediAssist API
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot mint"></div>
+                            <div class="tl-time">11:23:08</div>
+                            <div class="tl-text">
+                                FCM UPI deep-link dispatched ₹4,200 co-payment —
+                                React Native delivered
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot"></div>
+                            <div class="tl-time">02:17:41</div>
+                            <div class="tl-text">
+                                H19 Hyderabad — DICOM chest X-ray acquired, AI
+                                pipeline initiated
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot mint"></div>
+                            <div class="tl-time">02:17:43</div>
+                            <div class="tl-text">
+                                EfficientNet-B4 scored 91% — bilateral
+                                infiltrates detected, alert dispatched
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot err"></div>
+                            <div class="tl-time">09:44:12</div>
+                            <div class="tl-text">
+                                H22 Nagpur — Network outage detected, K3s
+                                offline-active mode engaged
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DPDP Summary -->
+                <div class="card card-lg col-span-2">
+                    <div class="card-label mint">
+                        DPDP ACT 2023 · COMPLIANCE RADAR
+                    </div>
+                    <canvas id="radarCanvas" width="260" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- ROI BANNER -->
+            <div class="roi-wrap">
+                <div class="roi-card">
+                    <div class="roi-val">₹<em>10</em>Cr</div>
+                    <div class="roi-lbl">
+                        Software License Savings (vs ₹42Cr CAPEX)
+                    </div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val">₹<em>2,200</em>Cr</div>
+                    <div class="roi-lbl">
+                        Projected Value Generation (3 Years)
+                    </div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val"><em>25×</em> ROI</div>
+                    <div class="roi-lbl">Open-Source First Methodology</div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val"><em>60%</em> ↓</div>
+                    <div class="roi-lbl">
+                        Observability Cost Reduction (vs Datadog)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 1: LAYER 1 — USER EXPERIENCE -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard" id="dash1">
+            <div class="section-title">
+                Layer 1 · User Interaction & Experience Engineering
+            </div>
+            <div class="section-desc">
+                Next.js 14 SSR performance · WebSocket latencies · Offline-first
+                sync · 8-minute discharge pipeline
+            </div>
+
+            <div class="bento bento-4col">
+                <!-- SSR Latency Ridgeline -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        SSR LATENCY DISTRIBUTION · NEXT.JS 14 APP ROUTER
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 24px">
+                                750<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">Current median</div>
+                            <div class="kpi-delta pos">↓ from 2,100ms</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 24px">
+                                800<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">P95 threshold</div>
+                            <div class="kpi-delta neu">target</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 24px">
+                                23<span class="kpi-unit">%</span>
+                            </div>
+                            <div class="kpi-label">Faster navigation</div>
+                            <div class="kpi-delta pos">eye-tracking</div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="ridgelineCanvas"
+                        width="520"
+                        height="160"
+                    ></canvas>
+                </div>
+
+                <!-- WebSocket Scatter -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        WEBSOCKET PUSH LATENCY · REAL-TIME AI ALERT DELIVERY
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 24px">
+                                90<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">Target delivery</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 24px">
+                                150<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">Warning threshold</div>
+                        </div>
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 24px"
+                                id="wsBreaches"
+                            >
+                                3
+                            </div>
+                            <div class="kpi-label">Breaches /min</div>
+                            <div class="kpi-delta neg">flag</div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="wsScatterCanvas"
+                        width="520"
+                        height="160"
+                    ></canvas>
+                </div>
+
+                <!-- Hospital Matrix -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        OFFLINE SYNC MATRIX · 32 HOSPITAL ZONES
+                    </div>
+                    <div class="hospital-matrix" id="hospitalMatrix"></div>
+                </div>
+
+                <!-- Sync Metrics -->
+                <div class="card card-md">
+                    <div class="card-label">RECONNECTION METRICS</div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">Sync flush time</span>
+                        <span class="sparkline-val">2.8s</span>
+                        <span class="status-pill pill-mint">TARGET</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">Data loss events</span>
+                        <span class="sparkline-val">0</span>
+                        <span class="status-pill pill-mint">PERFECT</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">OTA updates deployed</span>
+                        <span class="sparkline-val">14</span>
+                        <span class="status-pill pill-turq">TODAY</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">WatermelonDB queued</span>
+                        <span class="sparkline-val">4.2K</span>
+                        <span class="status-pill pill-turq">ITEMS</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">Offline nodes active</span>
+                        <span class="sparkline-val">1</span>
+                        <span class="status-pill pill-warn">H22</span>
+                    </div>
+                </div>
+
+                <!-- OTA Tracker -->
+                <div class="card card-md">
+                    <div class="card-label">
+                        EXPO OTA · MOBILE UPDATE VELOCITY
+                    </div>
+                    <div class="kpi-value" style="font-size: 20px">
+                        99.2<span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-label">Devices on latest build</div>
+                    <div style="margin-top: 10px">
+                        <div class="prog-bar-row">
+                            <div class="prog-bar-header">
+                                <span>iOS devices updated</span
+                                ><span>4,218</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 99%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 8px">
+                            <div class="prog-bar-header">
+                                <span>Android devices updated</span
+                                ><span>5,641</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 98.6%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 8px">
+                            <div class="prog-bar-header">
+                                <span>Pending (network issues)</span
+                                ><span>79</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 0.8%;
+                                        background: var(--status-warning);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8-Min Discharge Gantt -->
+                <div class="card card-lg col-span-4">
+                    <div class="card-label">
+                        8-MINUTE DISCHARGE PIPELINE · REAL-TIME GANTT WATERFALL
+                    </div>
+                    <div style="display: flex; gap: 20px; margin-bottom: 10px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                8<span class="kpi-unit">min</span>
+                            </div>
+                            <div class="kpi-label">Total cycle time</div>
+                        </div>
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 20px"
+                                id="staffHours"
+                            >
+                                6,240
+                            </div>
+                            <div class="kpi-label">Staff-hours saved today</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                79.5<span class="kpi-unit">%</span>
+                            </div>
+                            <div class="kpi-label">Bed occupancy</div>
+                        </div>
+                    </div>
+                    <div class="gantt-wrap">
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >Physician e-sign (T=0)</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="width: 1%; background: #aaa"
+                                >
+                                    ▸ T=0
+                                </div>
+                            </div>
+                            <span class="gantt-val">0ms</span>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >CockroachDB bill compile</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 1.5%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                >
+                                    800ms
+                                </div>
+                            </div>
+                            <span class="gantt-val">800ms</span>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >MuleSoft TPA pre-auth</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 4%;
+                                        background: var(--status-warning);
+                                    "
+                                >
+                                    2.2s
+                                </div>
+                            </div>
+                            <span class="gantt-val">2,200ms</span>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >FCM UPI payment link</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 0.8%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                >
+                                    340ms
+                                </div>
+                            </div>
+                            <span class="gantt-val">340ms</span>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >FHIR ePrescription route</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 0.8%;
+                                        background: var(--status-mint);
+                                    "
+                                >
+                                    340ms
+                                </div>
+                            </div>
+                            <span class="gantt-val">340ms</span>
+                        </div>
+                        <div class="gantt-row">
+                            <span class="gantt-label"
+                                >Pharmacy queue dispatch</span
+                            >
+                            <div class="gantt-track">
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 0.5%;
+                                        background: var(--status-mint);
+                                    "
+                                >
+                                    200ms
+                                </div>
+                            </div>
+                            <span class="gantt-val">200ms</span>
+                        </div>
+                        <div class="gantt-row" style="margin-top: 8px">
+                            <span
+                                class="gantt-label"
+                                style="
+                                    font-weight: 700;
+                                    color: var(--text-primary);
+                                "
+                                >TOTAL CYCLE</span
+                            >
+                            <div
+                                class="gantt-track"
+                                style="background: var(--surface-secondary)"
+                            >
+                                <div
+                                    class="gantt-fill"
+                                    style="
+                                        width: 100%;
+                                        background: var(--text-primary);
+                                    "
+                                >
+                                    8 MINUTES
+                                </div>
+                            </div>
+                            <span
+                                class="gantt-val"
+                                style="
+                                    color: var(--text-primary);
+                                    font-weight: 700;
+                                "
+                                >480s</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 2: LAYER 2 — API GATEWAY     -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard" id="dash2">
+            <div class="section-title">
+                Layer 2 · API Gateway, Security & DPDP Compliance
+            </div>
+            <div class="section-desc">
+                Apache APISIX · Keycloak IAM · Istio mTLS · Zero Trust · ₹250Cr
+                compliance surface
+            </div>
+
+            <div class="bento bento-4col">
+                <!-- Node-link network diagram -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        ZERO TRUST NETWORK · APISIX FORCE-DIRECTED REQUEST FLOW
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 22px">
+                                60K<span class="kpi-unit">rps</span>
+                            </div>
+                            <div class="kpi-label">Peak APISIX throughput</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 22px">
+                                8<span class="kpi-unit">ms P99</span>
+                            </div>
+                            <div class="kpi-label">Gateway latency</div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="networkDiagCanvas"
+                        width="520"
+                        height="200"
+                    ></canvas>
+                </div>
+
+                <!-- Security Stack Table -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label mint">
+                        ZERO TRUST SECURITY OVERHEAD · 22ms TOTAL
+                    </div>
+                    <table class="data-table" style="margin-top: 8px">
+                        <thead>
+                            <tr>
+                                <th>LAYER</th>
+                                <th>COMPONENT</th>
+                                <th>CHECK</th>
+                                <th>LATENCY</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Edge WAF</td>
+                                <td>Apache APISIX</td>
+                                <td>OWASP SQLi/XSS</td>
+                                <td>5ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >MINT</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Token Auth</td>
+                                <td>Keycloak OIDC</td>
+                                <td>JWT RS256 verify</td>
+                                <td>8ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >MINT</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Access Auth</td>
+                                <td>APISIX + Keycloak</td>
+                                <td>RBAC policy matrix</td>
+                                <td>6ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >MINT</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Audit Log</td>
+                                <td>Grafana Loki</td>
+                                <td>Async metadata write</td>
+                                <td>3ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >MINT</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Encryption</td>
+                                <td>Istio Sidecar</td>
+                                <td>mTLS cert exchange</td>
+                                <td>4ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >MINT</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr style="background: var(--surface-secondary)">
+                                <td style="font-weight: 700">TOTAL</td>
+                                <td style="font-weight: 700">Full Stack</td>
+                                <td style="font-weight: 700">End-to-End</td>
+                                <td
+                                    style="
+                                        font-weight: 700;
+                                        color: var(--status-mint);
+                                    "
+                                >
+                                    22ms
+                                </td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >OPTIMAL</span
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 12px">
+                        <canvas
+                            id="securityTimelineCanvas"
+                            width="520"
+                            height="60"
+                        ></canvas>
+                    </div>
+                </div>
+
+                <!-- DPDP Radar -->
+                <div class="card card-lg col-span-2">
+                    <div class="card-label mint">
+                        DPDP ACT 2023 · STATUTORY COMPLIANCE RADAR
+                    </div>
+                    <canvas
+                        id="dpdpRadarCanvas"
+                        width="380"
+                        height="220"
+                    ></canvas>
+                </div>
+
+                <!-- ABHA Federation -->
+                <div class="card card-lg">
+                    <div class="card-label">
+                        ABHA FEDERATION · 14-DIGIT DIGITAL IDs
+                    </div>
+                    <div class="kpi-value" style="font-size: 22px">
+                        98.4<span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-label">SSO success rate via ABHA</div>
+                    <div style="margin-top: 12px">
+                        <canvas
+                            id="abhaAreaCanvas"
+                            width="250"
+                            height="100"
+                        ></canvas>
+                    </div>
+                    <div class="sparkline-row" style="margin-top: 8px">
+                        <span class="sparkline-name"
+                            >ABHA IDs active today</span
+                        >
+                        <span class="sparkline-val">41,228</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >Hospital-specific passwords</span
+                        >
+                        <span class="sparkline-val">0</span>
+                        <span class="status-pill pill-mint">ERADICATED</span>
+                    </div>
+                </div>
+
+                <!-- Compliance Sections -->
+                <div class="card card-lg">
+                    <div class="card-label mint">
+                        DPDP SECTIONS · LIVE STATUS
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">§4 Lawful Processing</span>
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">§6 Granular Consent</span>
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >§8 Data Fiduciary Obligations</span
+                        >
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >§9 Minor Data Processing</span
+                        >
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">§16 Right to Erasure</span>
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">§17 Data Residency</span>
+                        <span class="sparkline-val">100%</span>
+                        <span class="status-pill pill-mint">✓</span>
+                    </div>
+                    <div
+                        style="
+                            margin-top: 8px;
+                            padding: 8px;
+                            background: var(--surface-secondary);
+                            border-left: 3px solid var(--status-mint);
+                        "
+                    >
+                        <div
+                            style="
+                                font-family: var(--font-mono);
+                                font-size: 9px;
+                                color: var(--status-mint);
+                                font-weight: 700;
+                            "
+                        >
+                            FULL STATUTORY COMPLIANCE
+                        </div>
+                        <div
+                            style="
+                                font-size: 10px;
+                                color: var(--text-secondary);
+                                margin-top: 2px;
+                            "
+                        >
+                            ₹250 Crore penalty exposure: MITIGATED
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APISIX vs Kong -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        APISIX GATEWAY · RPS THROUGHPUT MONITOR
+                    </div>
+                    <canvas id="rpsCanvas" width="520" height="110"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 3: LAYER 3 — AI & MICROSERVICES -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard" id="dash3">
+            <div class="section-title">
+                Layer 3 · AI & Microservices Application Layer
+            </div>
+            <div class="section-desc">
+                Apache Pulsar · EfficientNet-B4 · Saga Pattern · Circuit
+                Breakers · Bias Mitigation
+            </div>
+
+            <div class="bento bento-4col">
+                <!-- AI Pipeline -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        EFFICIENTNET-B4 · AI DIAGNOSTIC PIPELINE VELOCITY
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 10px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                1,810<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">End-to-end inference</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                96.1<span class="kpi-unit">%</span>
+                            </div>
+                            <div class="kpi-label">Target accuracy</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                85<span class="kpi-unit">%</span>
+                            </div>
+                            <div class="kpi-label">Confidence threshold</div>
+                        </div>
+                    </div>
+                    <div class="flow-nodes">
+                        <div class="flow-node">
+                            <div class="flow-node-val">800ms</div>
+                            <div class="flow-node-lbl">DICOM<br />Ingest</div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">50ms</div>
+                            <div class="flow-node-lbl">Pre-<br />process</div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">800ms</div>
+                            <div class="flow-node-lbl">CNN<br />Forward</div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">10ms</div>
+                            <div class="flow-node-lbl">
+                                Threshold<br />Score
+                            </div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">40ms</div>
+                            <div class="flow-node-lbl">FHIR<br />Report</div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">20ms</div>
+                            <div class="flow-node-lbl">Pulsar<br />Publish</div>
+                        </div>
+                        <div class="flow-node">
+                            <div class="flow-node-val">90ms</div>
+                            <div class="flow-node-lbl">WS<br />Deliver</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 14px">
+                        <canvas
+                            id="pipelineCanvas"
+                            width="520"
+                            height="80"
+                        ></canvas>
+                    </div>
+                </div>
+
+                <!-- Confidence Scatter -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        AI CONFIDENCE SCATTER · ANCHORING BIAS MITIGATION
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 20px"
+                                style="color: var(--brand-turquoise)"
+                            >
+                                ↑85%
+                            </div>
+                            <div
+                                class="kpi-label"
+                                style="color: var(--brand-turquoise)"
+                            >
+                                AI-annotated to clinician
+                            </div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                ↓85%
+                            </div>
+                            <div class="kpi-label">Blind human review</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                19M
+                            </div>
+                            <div class="kpi-label">
+                                Params (vs ResNet-50: 25.6M)
+                            </div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="confScatterCanvas"
+                        width="520"
+                        height="180"
+                    ></canvas>
+                </div>
+
+                <!-- Pulsar Multi-Tenancy Treemap -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        APACHE PULSAR · MULTI-TENANT HIERARCHY TREEMAP
+                    </div>
+                    <div
+                        style="
+                            font-family: var(--font-mono);
+                            font-size: 9px;
+                            color: var(--text-secondary);
+                            margin-bottom: 6px;
+                        "
+                    >
+                        Tenant → Namespace → Topic isolation across 32 hospital
+                        nodes
+                    </div>
+                    <canvas
+                        id="treemapCanvas"
+                        width="520"
+                        height="220"
+                    ></canvas>
+                </div>
+
+                <!-- Circuit Breakers -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        RESILIENCE4J · CIRCUIT BREAKER ARRAY
+                    </div>
+                    <div
+                        style="
+                            font-family: var(--font-mono);
+                            font-size: 9px;
+                            color: var(--text-secondary);
+                            margin-bottom: 6px;
+                        "
+                    >
+                        OPEN = 5 consecutive failures or >50% error rate in 10s
+                        window
+                    </div>
+                    <div class="breaker-grid" id="breakerGrid"></div>
+                    <div style="margin-top: 12px">
+                        <canvas
+                            id="sagaCanvas"
+                            width="520"
+                            height="80"
+                        ></canvas>
+                    </div>
+                </div>
+
+                <!-- Bias Monitoring -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label err">
+                        TRAINING BIAS MITIGATION · DEMOGRAPHIC EQUITY
+                    </div>
+                    <div
+                        style="
+                            font-family: var(--font-mono);
+                            font-size: 9px;
+                            color: var(--text-secondary);
+                            margin-bottom: 6px;
+                        "
+                    >
+                        Minimum 30% local Indian patient imaging data mandated
+                        in training corpus
+                    </div>
+                    <canvas id="biasCanvas" width="520" height="100"></canvas>
+                </div>
+
+                <!-- Model Comparison -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        MODEL EFFICIENCY · EfficientNet-B4 vs ResNet-50
+                    </div>
+                    <div
+                        style="
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 10px;
+                            margin-top: 6px;
+                        "
+                    >
+                        <div
+                            style="
+                                border: 1px solid var(--ui-border-light);
+                                padding: 10px;
+                            "
+                        >
+                            <div
+                                style="
+                                    font-family: var(--font-mono);
+                                    font-size: 9px;
+                                    color: var(--brand-turquoise);
+                                    font-weight: 700;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                EFFICIENTNET-B4 ✓ DEPLOYED
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Parameters</span
+                                ><span class="sparkline-val">19M</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">GPU Memory</span
+                                ><span class="sparkline-val">2.8GB</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Accuracy</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-mint)"
+                                    >96.1%</span
+                                >
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name"
+                                    >Pathology Classes</span
+                                ><span class="sparkline-val">15</span>
+                            </div>
+                        </div>
+                        <div
+                            style="
+                                border: 1px solid var(--ui-border-light);
+                                padding: 10px;
+                                opacity: 0.5;
+                            "
+                        >
+                            <div
+                                style="
+                                    font-family: var(--font-mono);
+                                    font-size: 9px;
+                                    color: var(--status-error);
+                                    font-weight: 700;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                RESNET-50 ✗ REJECTED
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Parameters</span
+                                ><span class="sparkline-val">25.6M</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">GPU Memory</span
+                                ><span class="sparkline-val">4.1GB</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Accuracy</span
+                                ><span class="sparkline-val">~91%</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Overhead</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-error)"
+                                    >+35%</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 4: LAYER 4 — LEGACY         -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard" id="dash4">
+            <div class="section-title">
+                Layer 4 · Legacy Integration & Clinical Orchestration
+            </div>
+            <div class="section-desc">
+                Mirth Connect HL7→FHIR · MuleSoft SAP · Master Patient Index ·
+                Probabilistic Identity
+            </div>
+
+            <div class="bento bento-4col">
+                <!-- HL7 Transform Chart -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        MIRTH CONNECT · HL7 v2.3 → FHIR R4 TRANSFORMATION
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                85<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">
+                                Aggregate transform time
+                            </div>
+                        </div>
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 20px"
+                                id="hl7Counter"
+                            >
+                                0
+                            </div>
+                            <div class="kpi-label">Messages today</div>
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            font-family: var(--font-mono);
+                            font-size: 9px;
+                            color: var(--text-secondary);
+                            margin-bottom: 8px;
+                        "
+                    >
+                        MSH + PID + OBR segments → MessageHeader + Patient +
+                        ServiceRequest FHIR R4
+                    </div>
+                    <canvas id="hl7Canvas" width="520" height="160"></canvas>
+                </div>
+
+                <!-- MPI Resolution -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        MASTER PATIENT INDEX · PROBABILISTIC IDENTITY RESOLUTION
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                0
+                            </div>
+                            <div class="kpi-label">
+                                Wrong-patient errors (347 days)
+                            </div>
+                        </div>
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 20px"
+                                style="color: var(--brand-turquoise)"
+                            >
+                                14-digit
+                            </div>
+                            <div class="kpi-label">
+                                ABHA deterministic override
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="mpiCanvas" width="520" height="180"></canvas>
+                </div>
+
+                <!-- MuleSoft SAP Buffer -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label warn">
+                        MULESOFT · SAP S/4HANA INTEGRATION BUFFER
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                20<span class="kpi-unit">ms</span>
+                            </div>
+                            <div class="kpi-label">iDOC post latency</div>
+                        </div>
+                        <div>
+                            <div
+                                class="kpi-value"
+                                style="font-size: 20px"
+                                id="iDocCount"
+                            >
+                                0
+                            </div>
+                            <div class="kpi-label">iDOCs buffered</div>
+                        </div>
+                    </div>
+                    <canvas id="sapCanvas" width="520" height="100"></canvas>
+                </div>
+
+                <!-- Probabilistic Weights -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        FELLEGI-SUNTER MODEL · MATCHING WEIGHT BREAKDOWN
+                    </div>
+                    <div style="margin-top: 8px">
+                        <div class="prog-bar-row">
+                            <div class="prog-bar-header">
+                                <span>Name (Soundex phonetic matching)</span>
+                                <span style="font-weight: 700">40%</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 40%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 8px">
+                            <div class="prog-bar-header">
+                                <span>Date of Birth (exact anchor)</span>
+                                <span style="font-weight: 700">30%</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 30%;
+                                        background: var(--status-mint);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 8px">
+                            <div class="prog-bar-header">
+                                <span>Mobile (Levenshtein ≤1 distance)</span>
+                                <span style="font-weight: 700">20%</span>
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 20%;
+                                        background: var(--status-warning);
+                                    "
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="prog-bar-row" style="margin-top: 8px">
+                            <div class="prog-bar-header">
+                                <span>ABHA Override (deterministic 100%)</span>
+                                <span
+                                    style="
+                                        font-weight: 700;
+                                        color: var(--brand-turquoise);
+                                    "
+                                    >ABSOLUTE</span
+                                >
+                            </div>
+                            <div class="prog-bar-track">
+                                <div
+                                    class="prog-bar-fill"
+                                    style="
+                                        width: 100%;
+                                        background: var(--brand-turquoise);
+                                    "
+                                >
+                                    <span
+                                        style="
+                                            padding-left: 6px;
+                                            font-size: 9px;
+                                        "
+                                        >ABHA VERIFIED</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            margin-top: 10px;
+                            padding: 8px;
+                            background: var(--surface-secondary);
+                            font-family: var(--font-mono);
+                            font-size: 10px;
+                            color: var(--text-secondary);
+                        "
+                    >
+                        Example: "Kumar" = "Kumaar" = "Cumar" → Soundex match
+                        K560 →
+                        <span
+                            style="color: var(--status-mint); font-weight: 700"
+                            >LINKED</span
+                        >
+                    </div>
+                </div>
+
+                <!-- DICOMweb protocols -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        DICOMweb PROTOCOLS · IMAGING METADATA TELEMETRY
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">WADO-RS retrievals</span>
+                        <span class="sparkline-val">8,241</span>
+                        <span class="status-pill pill-mint">TODAY</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">QIDO-RS searches</span>
+                        <span class="sparkline-val">3,177</span>
+                        <span class="status-pill pill-turq">ACTIVE</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">STOW-RS uploads</span>
+                        <span class="sparkline-val">1,924</span>
+                        <span class="status-pill pill-mint">OK</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >FHIR ImagingStudy pointers</span
+                        >
+                        <span class="sparkline-val">1,924</span>
+                        <span class="status-pill pill-mint">LINKED</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >DB bloat prevented (48MB avg)</span
+                        >
+                        <span class="sparkline-val">92.3 GB</span>
+                        <span class="status-pill pill-mint">SAVED</span>
+                    </div>
+                </div>
+
+                <!-- HL7 Segment Map -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        HL7 → FHIR SEGMENT MAPPING TABLE
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>HL7 SEGMENT</th>
+                                <th>FHIR R4 RESOURCE</th>
+                                <th>LATENCY</th>
+                                <th>RATE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>MSH (Message Header)</td>
+                                <td>MessageHeader</td>
+                                <td>8ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >100%</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PID (Patient ID)</td>
+                                <td>Patient resource</td>
+                                <td>12ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >100%</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>OBR (Observation Request)</td>
+                                <td>ServiceRequest</td>
+                                <td>18ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >99.8%</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORM (Order Message)</td>
+                                <td>ServiceRequest</td>
+                                <td>22ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >99.9%</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>OBX (Observation Result)</td>
+                                <td>Observation R4</td>
+                                <td>25ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >99.7%</span
+                                    >
+                                </td>
+                            </tr>
+                            <tr style="font-weight: 700">
+                                <td>TOTAL AGG</td>
+                                <td>All Transforms</td>
+                                <td style="color: var(--status-mint)">85ms</td>
+                                <td>
+                                    <span class="status-pill pill-mint"
+                                        >TARGET</span
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- DASHBOARD 5: LAYER 5 — CLOUD INFRA    -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="dashboard" id="dash5">
+            <div class="section-title">
+                Layer 5 · Cloud Infrastructure & Data Persistence
+            </div>
+            <div class="section-desc">
+                K3s Edge Clusters · CockroachDB Geo-Partition · ClickHouse OLAP
+                · Grafana Stack Observability
+            </div>
+
+            <div class="bento bento-4col">
+                <!-- India Map Heatmap -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label">
+                        K3s EDGE CLUSTER HEALTH · 32 HOSPITAL NODES
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                31
+                            </div>
+                            <div class="kpi-label">Online nodes</div>
+                            <div class="kpi-delta pos">ONLINE</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                1
+                            </div>
+                            <div class="kpi-label">Offline-Active (H22)</div>
+                            <div class="kpi-delta neg">NAGPUR</div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                &lt;512<span class="kpi-unit">MB</span>
+                            </div>
+                            <div class="kpi-label">K3s RAM requirement</div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="clusterCanvas"
+                        width="520"
+                        height="200"
+                    ></canvas>
+                </div>
+
+                <!-- CockroachDB Geo -->
+                <div class="card card-xl col-span-2">
+                    <div class="card-label mint">
+                        CockroachDB GEO-PARTITION · DPDP §17 DATA RESIDENCY
+                    </div>
+                    <div
+                        style="
+                            font-family: var(--font-mono);
+                            font-size: 9px;
+                            color: var(--text-secondary);
+                            margin-bottom: 8px;
+                        "
+                    >
+                        PARTITION BY LIST — patient records pinned to
+                        MeitY-certified state data centers
+                    </div>
+                    <canvas id="geoCanvas" width="520" height="230"></canvas>
+                </div>
+
+                <!-- ClickHouse OLAP -->
+                <div class="card card-lg col-span-2">
+                    <div class="card-label">
+                        CLICKHOUSE OLAP · COLUMNAR QUERY VELOCITY
+                    </div>
+                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                0.4<span class="kpi-unit">sec</span>
+                            </div>
+                            <div class="kpi-label">
+                                8,000-bed network occupancy calc
+                            </div>
+                        </div>
+                        <div>
+                            <div class="kpi-value" style="font-size: 20px">
+                                ∞
+                            </div>
+                            <div class="kpi-label">
+                                Query concurrency (vs Redshift: 50)
+                            </div>
+                        </div>
+                    </div>
+                    <canvas
+                        id="clickhouseCanvas"
+                        width="520"
+                        height="110"
+                    ></canvas>
+                </div>
+
+                <!-- Grafana Stack -->
+                <div class="card card-lg col-span-2">
+                    <div class="card-label mint">
+                        GRAFANA OBSERVABILITY STACK · SINGLE PANE OF GLASS
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">Grafana Loki (logs)</span>
+                        <span class="sparkline-val">2.1TB</span>
+                        <span class="status-pill pill-mint">COMPRESSED</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >Grafana Tempo (traces)</span
+                        >
+                        <span class="sparkline-val">847K</span>
+                        <span class="status-pill pill-mint">SPANS/DAY</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >Grafana Mimir (metrics)</span
+                        >
+                        <span class="sparkline-val">14.2M</span>
+                        <span class="status-pill pill-mint">SERIES</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >Datadog replacement savings</span
+                        >
+                        <span class="sparkline-val">60%</span>
+                        <span class="status-pill pill-turq">↓ COSTS</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >PagerDuty replacement</span
+                        >
+                        <span class="sparkline-val">✓</span>
+                        <span class="status-pill pill-mint">GRAFANA</span>
+                    </div>
+                    <div style="margin-top: 10px">
+                        <canvas
+                            id="grafanaCanvas"
+                            width="260"
+                            height="60"
+                        ></canvas>
+                    </div>
+                </div>
+
+                <!-- K3s vs K8s -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label">
+                        K3s vs K8s · RESOURCE EFFICIENCY
+                    </div>
+                    <div
+                        style="
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 10px;
+                            margin-top: 6px;
+                        "
+                    >
+                        <div
+                            style="
+                                border: 1px solid var(--ui-border-light);
+                                padding: 10px;
+                            "
+                        >
+                            <div
+                                style="
+                                    font-family: var(--font-mono);
+                                    font-size: 9px;
+                                    color: var(--status-mint);
+                                    font-weight: 700;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                K3s ✓ DEPLOYED
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name"
+                                    >RAM requirement</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-mint)"
+                                    >&lt;512MB</span
+                                >
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Datastore</span
+                                ><span class="sparkline-val">SQLite</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name"
+                                    >Edge-optimized</span
+                                ><span class="sparkline-val">✓</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name"
+                                    >CNCF certified</span
+                                ><span class="sparkline-val">✓</span>
+                            </div>
+                        </div>
+                        <div
+                            style="
+                                border: 1px solid var(--ui-border-light);
+                                padding: 10px;
+                                opacity: 0.5;
+                            "
+                        >
+                            <div
+                                style="
+                                    font-family: var(--font-mono);
+                                    font-size: 9px;
+                                    color: var(--status-error);
+                                    font-weight: 700;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                K8s ✗ REJECTED
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name"
+                                    >RAM requirement</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-error)"
+                                    >12GB</span
+                                >
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Datastore</span
+                                ><span class="sparkline-val">etcd</span>
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Control plane</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-error)"
+                                    >6 vCPUs</span
+                                >
+                            </div>
+                            <div class="sparkline-row">
+                                <span class="sparkline-name">Rural cost</span
+                                ><span
+                                    class="sparkline-val"
+                                    style="color: var(--status-error)"
+                                    >Prohibitive</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Source ROI -->
+                <div class="card card-md col-span-2">
+                    <div class="card-label mint">
+                        OPEN-SOURCE ROI · FINANCIAL SUMMARY
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >APISIX (vs Kong Enterprise)</span
+                        >
+                        <span class="sparkline-val">₹2.1Cr saved</span>
+                        <span class="status-pill pill-mint">OSS</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >Keycloak (vs Okta/Auth0)</span
+                        >
+                        <span class="sparkline-val">₹1.8Cr saved</span>
+                        <span class="status-pill pill-mint">OSS</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name">Grafana (vs Datadog)</span>
+                        <span class="sparkline-val">₹3.4Cr saved</span>
+                        <span class="status-pill pill-mint">OSS</span>
+                    </div>
+                    <div class="sparkline-row">
+                        <span class="sparkline-name"
+                            >ClickHouse (vs Redshift)</span
+                        >
+                        <span class="sparkline-val">₹2.7Cr saved</span>
+                        <span class="status-pill pill-mint">OSS</span>
+                    </div>
+                    <div
+                        style="
+                            border-top: 1px solid var(--ui-border);
+                            margin-top: 8px;
+                            padding-top: 8px;
+                        "
+                    >
+                        <div class="sparkline-row">
+                            <span
+                                class="sparkline-name"
+                                style="
+                                    font-weight: 700;
+                                    color: var(--text-primary);
+                                "
+                                >TOTAL SAVINGS</span
+                            >
+                            <span
+                                class="sparkline-val"
+                                style="
+                                    color: var(--status-mint);
+                                    font-size: 14px;
+                                "
+                                >₹10Cr</span
+                            >
+                            <span class="status-pill pill-mint"
+                                >vs ₹42Cr CAPEX</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TICKER BAR -->
+        <div class="ticker-wrap">
+            <div class="ticker-label">LIVE FEED</div>
+            <div class="ticker-track">
+                <div class="ticker-inner" id="tickerInner">
+                    <!-- doubled for seamless loop -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ── CLOCK ──────────────────────────────────────
+            function updateClock() {
+                const now = new Date();
+                document.getElementById("clock").textContent =
+                    now.toLocaleTimeString("en-IN", { hour12: false }) + " IST";
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            // ── TAB NAVIGATION ─────────────────────────────
+            function showDash(n) {
+                document.querySelectorAll(".dashboard").forEach((d, i) => {
+                    d.classList.toggle("active", i === n);
+                });
+                document.querySelectorAll(".nav-tab").forEach((t, i) => {
+                    t.classList.toggle("active", i === n);
+                });
+            }
+
+            // ── COLORS ─────────────────────────────────────
+            const C = {
+                turq: "#00CED1",
+                mint: "#157A64",
+                err: "#44152E",
+                warn: "#3F1538",
+                border: "#AAA6AE",
+                borderL: "#E0DDE3",
+                text: "#0C0D0F",
+                textSec: "#565553",
+                bg: "#FFFFFF",
+                bgSec: "#F4F5F5",
+            };
+
+            // ── LIVE COUNTERS ──────────────────────────────
+            let hoursBase = 6240,
+                hl7Base = 142800,
+                iDocBase = 0;
+            setInterval(() => {
+                hoursBase += Math.random() > 0.5 ? 1 : 0;
+                document.getElementById("hoursCounter").textContent =
+                    hoursBase.toLocaleString();
+                document.getElementById("staffHours").textContent =
+                    hoursBase.toLocaleString();
+                hl7Base += Math.floor(Math.random() * 40);
+                document.getElementById("hl7Counter").textContent =
+                    hl7Base.toLocaleString();
+                iDocBase = Math.floor(Math.random() * 120);
+                document.getElementById("iDocCount").textContent = iDocBase;
+                document.getElementById("wsBreaches").textContent = Math.floor(
+                    Math.random() * 5,
+                );
+            }, 2000);
+
+            // ── TICKER ─────────────────────────────────────
+            const tickerItems = [
+                "H07 Mumbai · Discharge completed in <7:52>",
+                "H19 Hyderabad · AI confidence 91% ARDS alert",
+                "APISIX throughput <54,218 RPS>",
+                "Zero Trust overhead <22ms>",
+                "ABHA federation <41,228 SSO sessions>",
+                "ClickHouse bed occupancy query <0.4s>",
+                "H22 Nagpur · Offline-Active · 847 events buffered",
+                "Mirth Connect HL7→FHIR <85ms avg>",
+                "MPI resolved 3 identity conflicts · 0 errors",
+                "EfficientNet-B4 accuracy <96.3%>",
+                "DPDP compliance <6/6 sections> FULL",
+                "CockroachDB geo-partition validated · Maharashtra pinned Mumbai",
+                "Staff-hours saved today <6,241>",
+                "OTA update deployed to 9,874 devices",
+                "SAP iDOC posted in <18ms>",
+                "Pulsar event bus · 32 tenants isolated",
+            ];
+            function buildTicker() {
+                const doubled = [...tickerItems, ...tickerItems];
+                const t = document.getElementById("tickerInner");
+                t.innerHTML = doubled
+                    .map((x) => {
+                        const parts = x.split("<");
+                        return `<span class="ticker-item">${parts[0]}<span>${parts[1]?.replace(">", "") || ""}</span></span>`;
+                    })
+                    .join("");
+            }
+            buildTicker();
+
+            // ── HOSPITAL MATRIX ────────────────────────────
+            function buildMatrix() {
+                const m = document.getElementById("hospitalMatrix");
+                for (let i = 1; i <= 32; i++) {
+                    const cell = document.createElement("div");
+                    cell.className = "matrix-cell";
+                    const isOffline = i === 22;
+                    const pendingLoad = Math.random();
+                    let bg;
+                    if (isOffline)
+                        bg = `repeating-linear-gradient(45deg,#ccc 0,#ccc 3px,#eee 3px,#eee 6px)`;
+                    else bg = `rgba(0,206,209,${0.15 + pendingLoad * 0.7})`;
+                    cell.innerHTML = `<div class="matrix-cell-inner" style="background:${bg}; color:${isOffline ? "#666" : pendingLoad > 0.6 ? "white" : "var(--brand-turquoise)"}; border:1px solid ${C.borderL}">${i}</div>`;
+                    cell.title = `Hospital ${i}${isOffline ? " — OFFLINE-ACTIVE" : ` — ${Math.floor(pendingLoad * 400)} queued`}`;
+                    m.appendChild(cell);
+                }
+            }
+            buildMatrix();
+
+            // ── CIRCUIT BREAKERS ───────────────────────────
+            const breakers = [
+                { name: "Billing API", state: "CLOSED" },
+                { name: "Pharmacy", state: "CLOSED" },
+                { name: "EMR Service", state: "CLOSED" },
+                { name: "TPA Gateway", state: "CLOSED" },
+                { name: "Notif. Service", state: "CLOSED" },
+                { name: "Scheduling", state: "OPEN" },
+            ];
+            function buildBreakers() {
+                const g = document.getElementById("breakerGrid");
+                breakers.forEach((b) => {
+                    const isOpen = b.state === "OPEN";
+                    g.innerHTML += `<div class="breaker-card">
+      <div class="breaker-name">${b.name}</div>
+      <div class="breaker-state ${isOpen ? "pill-err" : "pill-mint"}">${b.state}</div>
+    </div>`;
+                });
+            }
+            buildBreakers();
+
+            // ── CANVAS HELPERS ─────────────────────────────
+            function ctx(id) {
+                const c = document.getElementById(id);
+                return c ? c.getContext("2d") : null;
+            }
+            function rnd(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            // ── OVERVIEW NETWORK ───────────────────────────
+            function drawNetworkCanvas() {
+                const c = ctx("networkCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 260;
+                c.clearRect(0, 0, W, H);
+                // Generate node positions
+                const nodes = [];
+                for (let i = 0; i < 32; i++) {
+                    nodes.push({
+                        x: rnd(30, W - 30),
+                        y: rnd(30, H - 30),
+                        r: rnd(4, 8),
+                        h: i === 21,
+                        active: Math.random() > 0.1,
+                    });
+                }
+                // Draw edges
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        if (Math.random() > 0.85) {
+                            const a = nodes[i],
+                                b = nodes[j];
+                            c.beginPath();
+                            c.moveTo(a.x, a.y);
+                            c.lineTo(b.x, b.y);
+                            c.strokeStyle = "#E0DDE3";
+                            c.lineWidth = 0.8;
+                            c.stroke();
+                        }
+                    }
+                }
+                // Central hub
+                const cx = W / 2,
+                    cy = H / 2;
+                c.beginPath();
+                c.arc(cx, cy, 14, 0, Math.PI * 2);
+                c.fillStyle = C.text;
+                c.fill();
+                c.fillStyle = C.turq;
+                c.font = "bold 8px JetBrains Mono";
+                c.textAlign = "center";
+                c.fillText("HUB", cx, cy + 3);
+                // Draw nodes + spokes
+                nodes.forEach((n, i) => {
+                    // spoke
+                    c.beginPath();
+                    c.moveTo(cx, cy);
+                    c.lineTo(n.x, n.y);
+                    c.strokeStyle = "#E8E5EB";
+                    c.lineWidth = 0.5;
+                    c.stroke();
+                    // node
+                    c.beginPath();
+                    c.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    c.fillStyle = n.h ? C.err : n.active ? C.mint : "#AAA";
+                    c.fill();
+                    c.font = "6px JetBrains Mono";
+                    c.fillStyle = C.textSec;
+                    c.textAlign = "center";
+                    c.fillText(`H${i + 1}`, n.x, n.y - n.r - 2);
+                });
+            }
+            drawNetworkCanvas();
+
+            // ── LAYER PERF SPARKLINES ──────────────────────
+            function drawLayerPerf() {
+                const c = ctx("layerPerfCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 80;
+                c.clearRect(0, 0, W, H);
+                const layers = ["L1", "L2", "L3", "L4", "L5"];
+                const colors = [C.mint, C.mint, C.turq, C.mint, C.mint];
+                const W5 = W / 5;
+                layers.forEach((l, i) => {
+                    const pts = Array.from({ length: 20 }, () => rnd(0.92, 1));
+                    pts[pts.length - 1] = 0.999;
+                    const x0 = i * W5,
+                        w = W5 - 2;
+                    c.fillStyle = colors[i] + "18";
+                    c.fillRect(x0, 0, w, H);
+                    c.beginPath();
+                    pts.forEach((p, j) => {
+                        const x = x0 + (j / (pts.length - 1)) * w;
+                        const y = H - p * (H - 10) - 5;
+                        j === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                    });
+                    c.strokeStyle = colors[i];
+                    c.lineWidth = 1.5;
+                    c.stroke();
+                    c.fillStyle = C.textSec;
+                    c.font = "9px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(l, x0 + w / 2, H - 2);
+                });
+            }
+            drawLayerPerf();
+
+            // ── RADAR CHART ────────────────────────────────
+            function drawRadar(canvasId, labels, values, color) {
+                const c = ctx(canvasId);
+                if (!c) return;
+                const canvas = document.getElementById(canvasId);
+                const W = canvas.width,
+                    H = canvas.height;
+                const cx = W / 2,
+                    cy = H / 2 + 10;
+                const R = Math.min(W, H) / 2 - 30;
+                const n = labels.length;
+                c.clearRect(0, 0, W, H);
+                // Grid rings
+                [0.25, 0.5, 0.75, 1].forEach((r) => {
+                    c.beginPath();
+                    for (let i = 0; i < n; i++) {
+                        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+                        const x = cx + Math.cos(a) * R * r,
+                            y = cy + Math.sin(a) * R * r;
+                        i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                    }
+                    c.closePath();
+                    c.strokeStyle = "#E0DDE3";
+                    c.lineWidth = 0.8;
+                    c.stroke();
+                });
+                // Axes
+                for (let i = 0; i < n; i++) {
+                    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+                    c.beginPath();
+                    c.moveTo(cx, cy);
+                    c.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+                    c.strokeStyle = "#E0DDE3";
+                    c.lineWidth = 0.8;
+                    c.stroke();
+                    // Labels
+                    const lx = cx + Math.cos(a) * (R + 18),
+                        ly = cy + Math.sin(a) * (R + 18);
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(labels[i], lx, ly + 3);
+                }
+                // Data polygon
+                c.beginPath();
+                values.forEach((v, i) => {
+                    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+                    const x = cx + Math.cos(a) * R * v,
+                        y = cy + Math.sin(a) * R * v;
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.closePath();
+                c.fillStyle = color + "30";
+                c.fill();
+                c.strokeStyle = color;
+                c.lineWidth = 2;
+                c.stroke();
+                // Dots
+                values.forEach((v, i) => {
+                    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+                    c.beginPath();
+                    c.arc(
+                        cx + Math.cos(a) * R * v,
+                        cy + Math.sin(a) * R * v,
+                        3,
+                        0,
+                        Math.PI * 2,
+                    );
+                    c.fillStyle = color;
+                    c.fill();
+                });
+            }
+            // Overview radar
+            drawRadar(
+                "radarCanvas",
+                [
+                    "§4 Processing",
+                    "§6 Consent",
+                    "§8 Fiduciary",
+                    "§9 Minors",
+                    "§16 Erasure",
+                    "§17 Residency",
+                ],
+                [1, 1, 1, 1, 1, 1],
+                C.mint,
+            );
+            // DPDP radar
+            drawRadar(
+                "dpdpRadarCanvas",
+                [
+                    "§4 Processing",
+                    "§6 Consent",
+                    "§8 Fiduciary",
+                    "§9 Minors",
+                    "§16 Erasure",
+                    "§17 Residency",
+                ],
+                [1, 1, 1, 1, 1, 1],
+                C.mint,
+            );
+
+            // ── RIDGELINE CHART ────────────────────────────
+            function drawRidgeline() {
+                const c = ctx("ridgelineCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 160;
+                c.clearRect(0, 0, W, H);
+                function gauss(x, mu, sig) {
+                    return (
+                        Math.exp(-0.5 * ((x - mu) / sig) ** 2) /
+                        (sig * Math.sqrt(2 * Math.PI))
+                    );
+                }
+                const xMin = 0,
+                    xMax = 3000;
+                function drawDist(mu, sig, color, yBase, scale) {
+                    c.beginPath();
+                    for (let px = 0; px < W; px++) {
+                        const x = xMin + (px / W) * (xMax - xMin);
+                        const y = yBase - gauss(x, mu, sig) * scale;
+                        px === 0 ? c.moveTo(px, y) : c.lineTo(px, y);
+                    }
+                    c.lineTo(W, yBase);
+                    c.lineTo(0, yBase);
+                    c.closePath();
+                    c.fillStyle = color + "40";
+                    c.fill();
+                    c.beginPath();
+                    for (let px = 0; px < W; px++) {
+                        const x = xMin + (px / W) * (xMax - xMin);
+                        const y = yBase - gauss(x, mu, sig) * scale;
+                        px === 0 ? c.moveTo(px, y) : c.lineTo(px, y);
+                    }
+                    c.strokeStyle = color;
+                    c.lineWidth = 2;
+                    c.stroke();
+                    // Mean line
+                    const mx = ((mu - xMin) / (xMax - xMin)) * W;
+                    c.beginPath();
+                    c.moveTo(mx, yBase - 5);
+                    c.lineTo(mx, yBase - scale * gauss(mu, mu, sig));
+                    c.strokeStyle = color;
+                    c.lineWidth = 1;
+                    c.setLineDash([3, 3]);
+                    c.stroke();
+                    c.setLineDash([]);
+                }
+                drawDist(2100, 300, C.textSec, 80, 12000);
+                drawDist(750, 100, C.turq, 150, 12000);
+                // Labels
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("Legacy SPA (μ=2100ms)", 10, 15);
+                c.fillStyle = C.turq;
+                c.fillText("Next.js 14 SSR (μ=750ms)", 10, 30);
+                // X axis
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "center";
+                [0, 500, 1000, 1500, 2000, 2500, 3000].forEach((v) => {
+                    const px = ((v - xMin) / (xMax - xMin)) * W;
+                    c.fillText(v + "ms", px, 158);
+                    c.beginPath();
+                    c.moveTo(px, 152);
+                    c.lineTo(px, 155);
+                    c.strokeStyle = C.borderL;
+                    c.lineWidth = 1;
+                    c.stroke();
+                });
+            }
+            drawRidgeline();
+
+            // ── WEBSOCKET SCATTER ──────────────────────────
+            function drawWSScatter() {
+                const c = ctx("wsScatterCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 160;
+                c.clearRect(0, 0, W, H);
+                // Grid
+                [90, 150].forEach((y) => {
+                    const py = H - (y / 200) * H;
+                    c.beginPath();
+                    c.moveTo(0, py);
+                    c.lineTo(W, py);
+                    c.strokeStyle = y === 90 ? C.turq + "60" : C.err + "60";
+                    c.lineWidth = 1;
+                    c.setLineDash([4, 4]);
+                    c.stroke();
+                    c.setLineDash([]);
+                    c.fillStyle = y === 90 ? C.turq : C.err;
+                    c.font = "9px JetBrains Mono";
+                    c.textAlign = "right";
+                    c.fillText(y + "ms", W - 2, py - 2);
+                });
+                // Points
+                for (let i = 0; i < 200; i++) {
+                    const lat =
+                        rnd(30, 130) +
+                        (Math.random() > 0.93 ? rnd(50, 100) : 0);
+                    const x = rnd(5, W - 5);
+                    const py = H - (lat / 200) * H;
+                    c.beginPath();
+                    c.arc(x, py, 2, 0, Math.PI * 2);
+                    c.fillStyle =
+                        lat > 150 ? C.err : lat > 90 ? C.warn : C.turq;
+                    c.globalAlpha = 0.7;
+                    c.fill();
+                    c.globalAlpha = 1;
+                }
+            }
+            drawWSScatter();
+
+            // ── APISIX RPS ─────────────────────────────────
+            function drawRPS() {
+                const c = ctx("rpsCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 110;
+                c.clearRect(0, 0, W, H);
+                const pts = Array.from({ length: 60 }, (_, i) =>
+                    rnd(10000, 60000),
+                );
+                const max = 65000;
+                c.fillStyle = C.turq + "20";
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 59) * W,
+                        y = H - (p / max) * (H - 10);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.lineTo(W, H);
+                c.lineTo(0, H);
+                c.closePath();
+                c.fill();
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 59) * W,
+                        y = H - (p / max) * (H - 10);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.strokeStyle = C.turq;
+                c.lineWidth = 1.5;
+                c.stroke();
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "right";
+                c.fillText("60K RPS", W, 12);
+                c.fillText("0", W, H - 2);
+            }
+            drawRPS();
+
+            // ── ABHA AREA ──────────────────────────────────
+            function drawAbhaArea() {
+                const c = ctx("abhaAreaCanvas");
+                if (!c) return;
+                const W = 250,
+                    H = 100;
+                c.clearRect(0, 0, W, H);
+                const pts = Array.from(
+                    { length: 30 },
+                    (_, i) => 30000 + i * 400 + rnd(-500, 500),
+                );
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 29) * W,
+                        y = H - (p / 45000) * (H - 10);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.lineTo(W, H);
+                c.lineTo(0, H);
+                c.closePath();
+                c.fillStyle = C.turq + "25";
+                c.fill();
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 29) * W,
+                        y = H - (p / 45000) * (H - 10);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.strokeStyle = C.turq;
+                c.lineWidth = 1.5;
+                c.stroke();
+            }
+            drawAbhaArea();
+
+            // ── SECURITY TIMELINE ──────────────────────────
+            function drawSecTimeline() {
+                const c = ctx("securityTimelineCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 60;
+                c.clearRect(0, 0, W, H);
+                const segs = [
+                    { lbl: "WAF", ms: 5, col: C.mint },
+                    { lbl: "OIDC", ms: 8, col: C.mint },
+                    { lbl: "RBAC", ms: 6, col: C.mint },
+                    { lbl: "Loki", ms: 3, col: C.mint },
+                    { lbl: "mTLS", ms: 4, col: C.mint },
+                ];
+                const total = 26;
+                let x = 10;
+                segs.forEach((s) => {
+                    const w = (s.ms / total) * (W - 20);
+                    c.fillStyle = s.col;
+                    c.fillRect(x, 15, w - 2, 20);
+                    c.fillStyle = "white";
+                    c.font = "bold 9px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(s.lbl, x + w / 2, 29);
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.fillText(s.ms + "ms", x + w / 2, 50);
+                    x += w;
+                });
+                c.fillStyle = C.text;
+                c.font = "bold 9px JetBrains Mono";
+                c.textAlign = "right";
+                c.fillText("TOTAL: 22ms (target <50ms)", W, 12);
+            }
+            drawSecTimeline();
+
+            // ── AI PIPELINE CANVAS ─────────────────────────
+            function drawPipelineCanvas() {
+                const c = ctx("pipelineCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 80;
+                c.clearRect(0, 0, W, H);
+                const stages = [
+                    { ms: 800 },
+                    { ms: 50 },
+                    { ms: 800 },
+                    { ms: 10 },
+                    { ms: 40 },
+                    { ms: 20 },
+                    { ms: 90 },
+                ];
+                const total = 1810;
+                let x = 0;
+                stages.forEach((s, i) => {
+                    const w = (s.ms / total) * W;
+                    const hue = i === 2 ? C.warn : i === 0 ? C.textSec : C.turq;
+                    c.fillStyle = hue + (i % 2 === 0 ? "" : "aa");
+                    c.fillRect(x, 20, w - 1, 30);
+                    x += w;
+                });
+                c.fillStyle = C.text;
+                c.font = "bold 9px JetBrains Mono";
+                c.textAlign = "right";
+                c.fillText("1,810ms total end-to-end", W, 15);
+            }
+            drawPipelineCanvas();
+
+            // ── CONFIDENCE SCATTER ─────────────────────────
+            function drawConfScatter() {
+                const c = ctx("confScatterCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 180;
+                c.clearRect(0, 0, W, H);
+                // Threshold line
+                const thY = H - 0.85 * (H - 20);
+                c.beginPath();
+                c.moveTo(0, thY);
+                c.lineTo(W, thY);
+                c.strokeStyle = C.turq;
+                c.lineWidth = 1.5;
+                c.setLineDash([5, 4]);
+                c.stroke();
+                c.setLineDash([]);
+                c.fillStyle = C.turq;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText(
+                    "85% threshold — AI annotation routed to clinician",
+                    5,
+                    thY - 4,
+                );
+                for (let i = 0; i < 300; i++) {
+                    const conf = rnd(0.4, 1.0);
+                    const x = rnd(5, W - 5),
+                        y = H - conf * (H - 20);
+                    c.beginPath();
+                    c.arc(x, y, 2.5, 0, Math.PI * 2);
+                    c.fillStyle =
+                        conf >= 0.85 ? C.turq + "cc" : C.textSec + "55";
+                    c.fill();
+                }
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "right";
+                c.fillText("100%", W, 22);
+                c.fillText("40%", W, H - 2);
+            }
+            drawConfScatter();
+
+            // ── TREEMAP ────────────────────────────────────
+            function drawTreemap() {
+                const c = ctx("treemapCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 220;
+                c.clearRect(0, 0, W, H);
+                const hospitals = Array.from({ length: 32 }, (_, i) => ({
+                    id: i + 1,
+                    size: rnd(0.5, 2),
+                }));
+                const total = hospitals.reduce((s, h) => s + h.size, 0);
+                const cols = ["#00CED1", "#157A64", "#3F1538", "#44152E"];
+                let x = 0;
+                // Simple strip treemap
+                hospitals.forEach((h, i) => {
+                    const w = (h.size / total) * W;
+                    const depth = Math.floor(i / 8);
+                    c.fillStyle = cols[depth] + "20";
+                    c.fillRect(x, 0, w - 1, H);
+                    c.strokeStyle = cols[depth];
+                    c.lineWidth = 1;
+                    c.strokeRect(x, 0, w - 1, H);
+                    c.fillStyle = cols[depth];
+                    c.font = "bold 8px JetBrains Mono";
+                    c.textAlign = "center";
+                    if (w > 16) c.fillText(`H${h.id}`, x + w / 2, H / 2);
+                    x += w;
+                });
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText(
+                    "Each column = isolated Pulsar tenant · BookKeeper storage segregated",
+                    5,
+                    H - 4,
+                );
+            }
+            drawTreemap();
+
+            // ── SAGA/PULSAR CANVAS ─────────────────────────
+            function drawSaga() {
+                const c = ctx("sagaCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 80;
+                c.clearRect(0, 0, W, H);
+                const events = [
+                    "discharge.initiated",
+                    "billing.processing",
+                    "tpa.pre-auth",
+                    "fcm.dispatch",
+                    "pharmacy.queue",
+                    "discharge.complete",
+                ];
+                events.forEach((e, i) => {
+                    const x = i * (W / events.length) + 10;
+                    c.fillStyle = i === 5 ? C.mint : C.turq;
+                    c.beginPath();
+                    c.arc(x, 40, 6, 0, Math.PI * 2);
+                    c.fill();
+                    if (i < events.length - 1) {
+                        c.beginPath();
+                        c.moveTo(x + 6, 40);
+                        c.lineTo(x + W / events.length - 10, 40);
+                        c.strokeStyle = C.borderL;
+                        c.lineWidth = 1.5;
+                        c.stroke();
+                    }
+                    c.fillStyle = C.textSec;
+                    c.font = "7px JetBrains Mono";
+                    c.textAlign = "center";
+                    const words = e.split(".");
+                    c.fillText(words[0], x, 30);
+                    c.fillText("." + words[1], x, 20);
+                });
+            }
+            drawSaga();
+
+            // ── BIAS CHART ─────────────────────────────────
+            function drawBias() {
+                const c = ctx("biasCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 100;
+                c.clearRect(0, 0, W, H);
+                const quarters = [
+                    "Q1 2023",
+                    "Q2 2023",
+                    "Q3 2023",
+                    "Q4 2023",
+                    "Q1 2024",
+                    "Q2 2024",
+                ];
+                const nih = [70, 65, 58, 50, 42, 35];
+                const indian = [30, 35, 42, 50, 58, 65];
+                const bw = W / quarters.length - 4;
+                quarters.forEach((q, i) => {
+                    const x = i * (W / quarters.length) + 2;
+                    const niH = (nih[i] / 100) * (H - 20);
+                    const inH = (indian[i] / 100) * (H - 20);
+                    c.fillStyle = C.textSec + "88";
+                    c.fillRect(x, H - 20 - niH, bw / 2 - 1, niH);
+                    c.fillStyle = C.turq + "cc";
+                    c.fillRect(x + bw / 2, H - 20 - inH, bw / 2 - 1, inH);
+                    c.fillStyle = C.textSec;
+                    c.font = "7px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(q, x + bw / 2, H - 4);
+                });
+                c.fillStyle = C.textSec;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("■ NIH dataset  ", 0, 12);
+                c.fillStyle = C.turq;
+                c.fillText("■ Indian cohort (target ≥30%)", 90, 12);
+            }
+            drawBias();
+
+            // ── NETWORK DIAG ───────────────────────────────
+            function drawNetworkDiag() {
+                const c = ctx("networkDiagCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 200;
+                c.clearRect(0, 0, W, H);
+                const services = [
+                    { lbl: "Billing", x: 80, y: 60 },
+                    { lbl: "Pharmacy", x: 200, y: 40 },
+                    { lbl: "EMR", x: 320, y: 60 },
+                    { lbl: "AI Diag", x: 430, y: 80 },
+                    { lbl: "Scheduling", x: 120, y: 160 },
+                    { lbl: "Notification", x: 280, y: 170 },
+                ];
+                const gateway = { x: W / 2, y: H / 2 };
+                // Gateway
+                c.fillStyle = C.text;
+                c.fillRect(gateway.x - 35, gateway.y - 14, 70, 28);
+                c.fillStyle = C.turq;
+                c.font = "bold 8px JetBrains Mono";
+                c.textAlign = "center";
+                c.fillText("APISIX", gateway.x, gateway.y + 3);
+                // Services
+                services.forEach((s) => {
+                    c.beginPath();
+                    c.moveTo(gateway.x, gateway.y);
+                    c.lineTo(s.x, s.y);
+                    c.strokeStyle = C.mint + "80";
+                    c.lineWidth = 1.2;
+                    c.stroke();
+                    c.beginPath();
+                    c.arc(s.x, s.y, 18, 0, Math.PI * 2);
+                    c.fillStyle = C.mint + "20";
+                    c.fill();
+                    c.strokeStyle = C.mint;
+                    c.lineWidth = 1;
+                    c.stroke();
+                    c.fillStyle = C.text;
+                    c.font = "7px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(s.lbl, s.x, s.y + 3);
+                    // mTLS label
+                    const mx = (gateway.x + s.x) / 2,
+                        my = (gateway.y + s.y) / 2;
+                    c.fillStyle = C.turq + "aa";
+                    c.font = "6px JetBrains Mono";
+                    c.fillText("mTLS", mx, my - 3);
+                });
+                // Attack indicator
+                c.beginPath();
+                c.arc(320, 60, 18, 0, Math.PI * 2);
+                c.strokeStyle = C.err;
+                c.lineWidth = 2;
+                c.setLineDash([3, 3]);
+                c.stroke();
+                c.setLineDash([]);
+            }
+            drawNetworkDiag();
+
+            // ── HL7 CHART ──────────────────────────────────
+            function drawHL7Chart() {
+                const c = ctx("hl7Canvas");
+                if (!c) return;
+                const W = 520,
+                    H = 160;
+                c.clearRect(0, 0, W, H);
+                const msgs = Array.from({ length: 60 }, () => rnd(800, 1800));
+                const latencies = msgs.map(() => rnd(70, 105));
+                const maxMsg = 2000,
+                    maxLat = 120;
+                // Bar chart for messages
+                msgs.forEach((m, i) => {
+                    const x = i * (W / 60),
+                        w = W / 60 - 1;
+                    const bh = (m / maxMsg) * (H - 30);
+                    c.fillStyle = C.turq + "55";
+                    c.fillRect(x, H - 30 - bh, w, bh);
+                });
+                // Line for latency
+                c.beginPath();
+                latencies.forEach((l, i) => {
+                    const x = i * (W / 60) + W / 120;
+                    const y = H - 30 - (l / maxLat) * (H - 30);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.strokeStyle = C.warn;
+                c.lineWidth = 1.5;
+                c.stroke();
+                // Threshold
+                const ty = H - 30 - (85 / maxLat) * (H - 30);
+                c.beginPath();
+                c.moveTo(0, ty);
+                c.lineTo(W, ty);
+                c.strokeStyle = C.err + "80";
+                c.lineWidth = 1;
+                c.setLineDash([4, 4]);
+                c.stroke();
+                c.setLineDash([]);
+                c.fillStyle = C.err;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("85ms target", 4, ty - 3);
+            }
+            drawHL7Chart();
+
+            // ── MPI CHART ──────────────────────────────────
+            function drawMPI() {
+                const c = ctx("mpiCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 180;
+                c.clearRect(0, 0, W, H);
+                const categories = [
+                    "Name Match\n(40% Soundex)",
+                    "DoB Match\n(30% exact)",
+                    "Mobile Match\n(20% Levenshtein)",
+                    "ABHA Override\n(100% certain)",
+                ];
+                const bw = (W - 40) / categories.length;
+                categories.forEach((cat, i) => {
+                    const x = 20 + i * bw;
+                    const parts = ["Name", "DoB", "Mobile", "ABHA"];
+                    const cols = [C.turq, C.mint, C.warn, C.turq];
+                    const heights = [0.4, 0.3, 0.2, 1.0];
+                    const h = heights[i] * (H - 40);
+                    if (i === 3) {
+                        c.fillStyle = C.turq;
+                        c.fillRect(x, H - 40 - h, bw - 4, h);
+                        c.fillStyle = "white";
+                        c.font = "bold 9px JetBrains Mono";
+                        c.textAlign = "center";
+                        c.fillText("ABHA", x + bw / 2, H - 40 - h / 2 + 4);
+                    } else {
+                        c.fillStyle = cols[i] + "aa";
+                        c.fillRect(x, H - 40 - h, bw - 4, h);
+                    }
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.textAlign = "center";
+                    const lines = cat.split("\n");
+                    lines.forEach((l, j) =>
+                        c.fillText(l, x + bw / 2, H - 20 + j * 12),
+                    );
+                });
+            }
+            drawMPI();
+
+            // ── SAP BUFFER ─────────────────────────────────
+            function drawSAP() {
+                const c = ctx("sapCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 100;
+                c.clearRect(0, 0, W, H);
+                const pts = Array.from({ length: 60 }, (_, i) => {
+                    if (i < 20) return 0;
+                    if (i < 40) return i - 20;
+                    return Math.max(0, 60 - (i - 40) * 3);
+                });
+                const max = 25;
+                c.fillStyle = C.warn + "20";
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 59) * W,
+                        y = H - 10 - (p / max) * (H - 20);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.lineTo(W, H - 10);
+                c.lineTo(0, H - 10);
+                c.closePath();
+                c.fill();
+                c.beginPath();
+                pts.forEach((p, i) => {
+                    const x = (i / 59) * W,
+                        y = H - 10 - (p / max) * (H - 20);
+                    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                });
+                c.strokeStyle = C.warn;
+                c.lineWidth = 1.5;
+                c.stroke();
+                c.fillStyle = C.textSec;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("SAP DOWNTIME →", W * 0.32, 20);
+                c.fillText("← RECOVERY / FLUSH", W * 0.65, 20);
+            }
+            drawSAP();
+
+            // ── CLUSTER HEALTH ─────────────────────────────
+            function drawCluster() {
+                const c = ctx("clusterCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 200;
+                c.clearRect(0, 0, W, H);
+                // Draw simple India outline placeholder with nodes
+                c.fillStyle = C.bgSec;
+                c.fillRect(0, 0, W, H);
+                c.fillStyle = C.borderL;
+                c.fillRect(80, 20, 360, 160);
+                c.fillStyle = C.textSec;
+                c.font = "9px JetBrains Mono";
+                c.textAlign = "center";
+                c.fillText(
+                    "INDIA — K3s Edge Cluster Geographic Distribution",
+                    W / 2,
+                    H - 6,
+                );
+                // Hospital nodes scattered across "India"
+                const positions = [
+                    [120, 60],
+                    [160, 45],
+                    [200, 55],
+                    [250, 40],
+                    [300, 50],
+                    [340, 60],
+                    [380, 55],
+                    [420, 70],
+                    [130, 90],
+                    [170, 80],
+                    [210, 85],
+                    [260, 75],
+                    [310, 80],
+                    [350, 90],
+                    [390, 80],
+                    [430, 95],
+                    [140, 120],
+                    [180, 115],
+                    [220, 110],
+                    [270, 105],
+                    [320, 115],
+                    [360, 120],
+                    [400, 110],
+                    [440, 125],
+                    [150, 150],
+                    [190, 145],
+                    [230, 140],
+                    [280, 135],
+                    [330, 145],
+                    [370, 155],
+                    [410, 145],
+                    [290, 170],
+                ];
+                positions.forEach((pos, i) => {
+                    const isOffline = i === 21;
+                    c.beginPath();
+                    c.arc(pos[0], pos[1], 8, 0, Math.PI * 2);
+                    c.fillStyle = isOffline ? C.warn : C.mint;
+                    c.fill();
+                    c.fillStyle = "white";
+                    c.font = "5px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(i + 1, pos[0], pos[1] + 2);
+                });
+                // Legend
+                c.beginPath();
+                c.arc(20, 20, 5, 0, Math.PI * 2);
+                c.fillStyle = C.mint;
+                c.fill();
+                c.fillStyle = C.textSec;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("Online (31)", 28, 23);
+                c.beginPath();
+                c.arc(20, 38, 5, 0, Math.PI * 2);
+                c.fillStyle = C.warn;
+                c.fill();
+                c.fillText("Offline-Active (1)", 28, 41);
+            }
+            drawCluster();
+
+            // ── GEO PARTITION ─────────────────────────────
+            function drawGeo() {
+                const c = ctx("geoCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 230;
+                c.clearRect(0, 0, W, H);
+                const zones = [
+                    {
+                        name: "Maharashtra",
+                        dc: "Mumbai DC",
+                        color: C.turq,
+                        x: 0,
+                        w: 0.35,
+                        records: "2.1M",
+                    },
+                    {
+                        name: "Karnataka",
+                        dc: "Hyderabad DC",
+                        color: C.mint,
+                        x: 0.35,
+                        w: 0.25,
+                        records: "1.4M",
+                    },
+                    {
+                        name: "Tamil Nadu",
+                        dc: "Chennai DC",
+                        color: C.warn,
+                        x: 0.6,
+                        w: 0.2,
+                        records: "0.9M",
+                    },
+                    {
+                        name: "Delhi NCR",
+                        dc: "Delhi DC",
+                        color: "#8A2BE2",
+                        x: 0.8,
+                        w: 0.2,
+                        records: "1.2M",
+                    },
+                ];
+                zones.forEach((z) => {
+                    const x = z.x * W,
+                        w = z.w * W - 2;
+                    c.fillStyle = z.color + "20";
+                    c.fillRect(x, 30, w, H - 60);
+                    c.strokeStyle = z.color;
+                    c.lineWidth = 1.5;
+                    c.strokeRect(x, 30, w, H - 60);
+                    c.fillStyle = z.color;
+                    c.font = "bold 10px JetBrains Mono";
+                    c.textAlign = "center";
+                    c.fillText(z.name, x + w / 2, 55);
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.fillText(z.dc, x + w / 2, 72);
+                    c.fillText("PARTITION BY LIST", x + w / 2, 90);
+                    c.fillStyle = z.color;
+                    c.font = "bold 13px JetBrains Mono";
+                    c.fillText(z.records + " records", x + w / 2, 120);
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.fillText("geo-pinned ✓", x + w / 2, 138);
+                    // Lock icon area
+                    c.fillStyle = z.color + "40";
+                    c.fillRect(x + w / 2 - 20, 155, 40, 25);
+                    c.fillStyle = z.color;
+                    c.font = "bold 9px JetBrains Mono";
+                    c.fillText("LOCKED", x + w / 2, 171);
+                });
+                c.fillStyle = C.textSec;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "center";
+                c.fillText(
+                    "Cross-state transfer: STRUCTURALLY BLOCKED at CockroachDB consensus layer",
+                    W / 2,
+                    H - 4,
+                );
+            }
+            drawGeo();
+
+            // ── CLICKHOUSE ─────────────────────────────────
+            function drawClickhouse() {
+                const c = ctx("clickhouseCanvas");
+                if (!c) return;
+                const W = 520,
+                    H = 110;
+                c.clearRect(0, 0, W, H);
+                const queries = [
+                    {
+                        lbl: "Bed occupancy (8K beds)",
+                        azhn: 0.4,
+                        redshift: 180,
+                        unit: "s",
+                    },
+                    {
+                        lbl: "Network revenue aggregate",
+                        azhn: 1.2,
+                        redshift: 240,
+                        unit: "s",
+                    },
+                    {
+                        lbl: "AI alert volume by hospital",
+                        azhn: 0.8,
+                        redshift: 120,
+                        unit: "s",
+                    },
+                    {
+                        lbl: "Discharge cycle P95",
+                        azhn: 0.6,
+                        redshift: 150,
+                        unit: "s",
+                    },
+                ];
+                const maxT = 250;
+                queries.forEach((q, i) => {
+                    const y = i * 24 + 15;
+                    // Redshift bar
+                    c.fillStyle = C.textSec + "44";
+                    c.fillRect(160, y, (q.redshift / maxT) * (W - 170), 10);
+                    c.fillStyle = C.textSec + "88";
+                    c.font = "8px JetBrains Mono";
+                    c.textAlign = "left";
+                    c.fillText(
+                        `${q.redshift}s`,
+                        160 + (q.redshift / maxT) * (W - 170) + 3,
+                        y + 8,
+                    );
+                    // ClickHouse bar
+                    c.fillStyle = C.turq + "cc";
+                    c.fillRect(160, y + 11, (q.azhn / maxT) * (W - 170), 8);
+                    c.fillStyle = C.turq;
+                    c.font = "bold 8px JetBrains Mono";
+                    c.fillText(
+                        `${q.azhn}s`,
+                        160 + (q.azhn / maxT) * (W - 170) + 3,
+                        y + 18,
+                    );
+                    // Label
+                    c.fillStyle = C.textSec;
+                    c.font = "8px JetBrains Mono";
+                    c.textAlign = "right";
+                    c.fillText(q.lbl, 158, y + 8);
+                });
+                c.fillStyle = C.textSec;
+                c.font = "8px JetBrains Mono";
+                c.textAlign = "left";
+                c.fillText("■ Amazon Redshift", 160, H - 2);
+                c.fillStyle = C.turq;
+                c.fillText("■ ClickHouse", 260, H - 2);
+            }
+            drawClickhouse();
+
+            // ── GRAFANA SPARKLINE ──────────────────────────
+            function drawGrafana() {
+                const c = ctx("grafanaCanvas");
+                if (!c) return;
+                const W = 260,
+                    H = 60;
+                c.clearRect(0, 0, W, H);
+                const metrics = ["Loki", "Tempo", "Mimir"];
+                const cols = [C.turq, C.mint, C.warn];
+                metrics.forEach((m, mi) => {
+                    const pts = Array.from({ length: 20 }, () => rnd(0.3, 1));
+                    c.beginPath();
+                    pts.forEach((p, i) => {
+                        const x = (i / 19) * (W - 40) + mi * 0;
+                        const y = H - 5 - p * (H - 15);
+                        i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                    });
+                    c.strokeStyle = cols[mi];
+                    c.lineWidth = 1.2;
+                    c.stroke();
+                });
+            }
+            drawGrafana();
+
+            // ── LIVE ANIMATION ─────────────────────────────
+            setInterval(() => {
+                drawWSScatter();
+                drawRPS();
+                drawAbhaArea();
+            }, 3000);
+        </script>
+    </body>
+</html>
