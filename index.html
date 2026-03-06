@@ -59,6 +59,7 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                min-width: 0;
             }
             .brand-badge {
                 background: var(--text-primary);
@@ -68,6 +69,7 @@
                 font-weight: 700;
                 padding: 2px 7px;
                 letter-spacing: 0.08em;
+                flex-shrink: 0;
             }
             .brand-name {
                 font-family: var(--font-display);
@@ -75,17 +77,24 @@
                 font-weight: 800;
                 color: var(--text-primary);
                 letter-spacing: -0.02em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .brand-sub {
                 font-family: var(--font-mono);
                 font-size: 10px;
                 color: var(--text-secondary);
                 letter-spacing: 0.04em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             .header-meta {
                 display: flex;
                 align-items: center;
                 gap: 18px;
+                flex-shrink: 0;
             }
             .live-badge {
                 display: flex;
@@ -123,6 +132,7 @@
                 color: var(--text-secondary);
                 border-left: 1px solid var(--ui-border);
                 padding-left: 14px;
+                white-space: nowrap;
             }
             .header-stat span {
                 color: var(--brand-turquoise);
@@ -137,6 +147,7 @@
                 padding: 0 20px;
                 gap: 0;
                 overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             .nav-tab {
                 padding: 10px 18px;
@@ -314,7 +325,8 @@
                 font-family: var(--font-mono);
                 font-size: 10px;
                 color: var(--text-secondary);
-                min-width: 110px;
+                min-width: 80px;
+                flex: 1;
             }
             .sparkline-val {
                 font-family: var(--font-mono);
@@ -323,6 +335,7 @@
                 color: var(--text-primary);
                 min-width: 36px;
                 text-align: right;
+                flex-shrink: 0;
             }
             .status-pill {
                 font-family: var(--font-mono);
@@ -330,6 +343,7 @@
                 font-weight: 700;
                 padding: 2px 6px;
                 letter-spacing: 0.06em;
+                flex-shrink: 0;
             }
             .pill-mint {
                 background: #157a6418;
@@ -420,6 +434,7 @@
                 border: 1px solid #2a2a2a;
                 width: fit-content;
                 flex-wrap: wrap;
+                max-width: 100%;
             }
             .hero-stat {
                 padding: 12px 22px;
@@ -452,6 +467,8 @@
             /* ── CANVAS CHARTS ── */
             canvas {
                 display: block;
+                max-width: 100%;
+                height: auto;
             }
 
             /* ── TABLE ── */
@@ -482,6 +499,13 @@
             }
             .data-table tr:hover td {
                 background: var(--surface-secondary);
+            }
+
+            /* ── TABLE RESPONSIVE ── */
+            .table-responsive {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             /* ── PROGRESS BAR ── */
@@ -568,6 +592,7 @@
                 height: 18px;
                 background: var(--ui-border-light);
                 position: relative;
+                min-width: 0;
             }
             .gantt-fill {
                 height: 100%;
@@ -582,12 +607,15 @@
                 font-weight: 600;
                 color: white;
                 transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+                white-space: nowrap;
+                overflow: hidden;
             }
             .gantt-val {
                 font-family: var(--font-mono);
                 font-size: 9px;
                 color: var(--text-secondary);
                 min-width: 40px;
+                flex-shrink: 0;
             }
 
             /* ── FLOW DIAGRAM ── */
@@ -596,6 +624,7 @@
                 gap: 1px;
                 margin-top: 10px;
                 align-items: stretch;
+                flex-wrap: wrap;
             }
             .flow-node {
                 flex: 1;
@@ -604,6 +633,7 @@
                 border: 1px solid var(--ui-border-light);
                 text-align: center;
                 position: relative;
+                min-width: 60px;
             }
             .flow-node::after {
                 content: "→";
@@ -777,12 +807,14 @@
                 font-size: 9px;
                 color: var(--text-secondary);
                 min-width: 50px;
+                flex-shrink: 0;
             }
             .tl-text {
                 font-size: 11px;
                 color: var(--text-primary);
                 flex: 1;
                 line-height: 1.4;
+                min-width: 0;
             }
 
             /* ── SPAN HELPERS ── */
@@ -837,6 +869,15 @@
                 margin-top: 6px;
             }
 
+            /* ── KPI flex helper ── */
+            .kpi-flex {
+                display: flex;
+                gap: 14px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+
+            /* ── RESPONSIVE: TABLET ── */
             @media (max-width: 900px) {
                 .bento-5col {
                     grid-template-columns: repeat(2, 1fr);
@@ -859,6 +900,198 @@
                 .col-span-5 {
                     grid-column: span 2;
                 }
+                .header-stat {
+                    display: none;
+                }
+                .brand-sub {
+                    display: none;
+                }
+                .gantt-label {
+                    width: 90px;
+                    font-size: 8px;
+                }
+                .hero-stat {
+                    padding: 10px 16px;
+                }
+                .hero-stat-val {
+                    font-size: 18px;
+                }
+            }
+
+            /* ── RESPONSIVE: MOBILE ── */
+            @media (max-width: 600px) {
+                .header {
+                    padding: 0 10px;
+                    height: auto;
+                    min-height: 48px;
+                    flex-wrap: wrap;
+                    gap: 4px;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                }
+                .header-brand {
+                    gap: 6px;
+                    width: 100%;
+                }
+                .brand-name {
+                    font-size: 12px;
+                }
+                .brand-sub {
+                    display: none;
+                }
+                .header-meta {
+                    gap: 10px;
+                    width: 100%;
+                    justify-content: flex-start;
+                    flex-wrap: wrap;
+                }
+                .header-stat {
+                    display: none;
+                }
+                .nav-tabs {
+                    padding: 0 8px;
+                }
+                .nav-tab {
+                    padding: 8px 12px;
+                    font-size: 9px;
+                }
+                .bento {
+                    margin: 8px;
+                }
+                .bento-5col,
+                .bento-4col,
+                .bento-3col,
+                .bento-2col {
+                    grid-template-columns: 1fr;
+                }
+                .col-span-2,
+                .col-span-3,
+                .col-span-4,
+                .col-span-5 {
+                    grid-column: span 1;
+                }
+                .overview-grid {
+                    grid-template-columns: 1fr;
+                    margin: 8px;
+                }
+                .roi-wrap {
+                    grid-template-columns: 1fr;
+                    margin: 0 8px 8px;
+                }
+                .roi-card {
+                    border-right: none;
+                    border-bottom: 1px solid #222;
+                    padding: 14px 16px;
+                }
+                .roi-card:last-child {
+                    border-bottom: none;
+                }
+                .roi-val {
+                    font-size: 22px;
+                }
+                .hero {
+                    padding: 28px 14px 24px;
+                }
+                .hero-eyebrow {
+                    font-size: 8px;
+                    letter-spacing: 0.08em;
+                }
+                .hero-desc {
+                    font-size: 12px;
+                }
+                .hero-stats {
+                    width: 100%;
+                    flex-wrap: wrap;
+                }
+                .hero-stat {
+                    padding: 8px 12px;
+                    flex: 1;
+                    min-width: 45%;
+                    border-bottom: 1px solid #2a2a2a;
+                }
+                .hero-stat-val {
+                    font-size: 16px;
+                }
+                .hero-stat-lbl {
+                    font-size: 8px;
+                }
+                .kpi-value {
+                    font-size: 26px;
+                }
+                .section-title {
+                    font-size: 16px;
+                    margin: 14px 12px 2px;
+                }
+                .section-desc {
+                    font-size: 11px;
+                    margin: 0 12px 8px;
+                }
+                .card {
+                    padding: 10px;
+                }
+                .card-label {
+                    font-size: 8px;
+                }
+                .gantt-label {
+                    width: 70px;
+                    font-size: 7px;
+                }
+                .gantt-val {
+                    font-size: 7px;
+                    min-width: 32px;
+                }
+                .gantt-fill {
+                    font-size: 7px;
+                }
+                .flow-nodes {
+                    flex-wrap: wrap;
+                    gap: 4px;
+                }
+                .flow-node {
+                    min-width: calc(33% - 4px);
+                    flex: 0 0 auto;
+                }
+                .flow-node::after {
+                    display: none;
+                }
+                .hospital-matrix {
+                    grid-template-columns: repeat(8, 1fr);
+                }
+                .breaker-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .sparkline-name {
+                    min-width: 60px;
+                    font-size: 9px;
+                }
+                .sparkline-val {
+                    font-size: 10px;
+                }
+                .data-table th,
+                .data-table td {
+                    padding: 4px 4px;
+                    font-size: 8px;
+                }
+                .tl-time {
+                    min-width: 40px;
+                    font-size: 8px;
+                }
+                .tl-text {
+                    font-size: 10px;
+                }
+            }
+
+            /* ── RESPONSIVE: VERY SMALL ── */
+            @media (max-width: 380px) {
+                .hero-stat {
+                    min-width: 100%;
+                }
+                .hospital-matrix {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+                .flow-node {
+                    min-width: calc(50% - 4px);
+                }
             }
         </style>
     </head>
@@ -867,7 +1100,7 @@
         <header class="header">
             <div class="header-brand">
                 <div class="brand-badge">AZHN</div>
-                <div>
+                <div style="min-width: 0">
                     <div class="brand-name">
                         Aarogya Zenith Healthcare Network
                     </div>
@@ -1237,7 +1470,7 @@
                     <div class="card-label">
                         SSR LATENCY DISTRIBUTION · NEXT.JS 14 APP ROUTER
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 24px">
                                 750<span class="kpi-unit">ms</span>
@@ -1272,7 +1505,7 @@
                     <div class="card-label">
                         WEBSOCKET PUSH LATENCY · REAL-TIME AI ALERT DELIVERY
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 24px">
                                 90<span class="kpi-unit">ms</span>
@@ -1405,7 +1638,10 @@
                     <div class="card-label">
                         8-MINUTE DISCHARGE PIPELINE · REAL-TIME GANTT WATERFALL
                     </div>
-                    <div style="display: flex; gap: 20px; margin-bottom: 10px">
+                    <div
+                        class="kpi-flex"
+                        style="gap: 20px; margin-bottom: 10px"
+                    >
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 8<span class="kpi-unit">min</span>
@@ -1584,7 +1820,7 @@
                     <div class="card-label">
                         ZERO TRUST NETWORK · APISIX FORCE-DIRECTED REQUEST FLOW
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 22px">
                                 60K<span class="kpi-unit">rps</span>
@@ -1610,92 +1846,96 @@
                     <div class="card-label mint">
                         ZERO TRUST SECURITY OVERHEAD · 22ms TOTAL
                     </div>
-                    <table class="data-table" style="margin-top: 8px">
-                        <thead>
-                            <tr>
-                                <th>LAYER</th>
-                                <th>COMPONENT</th>
-                                <th>CHECK</th>
-                                <th>LATENCY</th>
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Edge WAF</td>
-                                <td>Apache APISIX</td>
-                                <td>OWASP SQLi/XSS</td>
-                                <td>5ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >MINT</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Token Auth</td>
-                                <td>Keycloak OIDC</td>
-                                <td>JWT RS256 verify</td>
-                                <td>8ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >MINT</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Access Auth</td>
-                                <td>APISIX + Keycloak</td>
-                                <td>RBAC policy matrix</td>
-                                <td>6ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >MINT</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Audit Log</td>
-                                <td>Grafana Loki</td>
-                                <td>Async metadata write</td>
-                                <td>3ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >MINT</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Encryption</td>
-                                <td>Istio Sidecar</td>
-                                <td>mTLS cert exchange</td>
-                                <td>4ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >MINT</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr style="background: var(--surface-secondary)">
-                                <td style="font-weight: 700">TOTAL</td>
-                                <td style="font-weight: 700">Full Stack</td>
-                                <td style="font-weight: 700">End-to-End</td>
-                                <td
-                                    style="
-                                        font-weight: 700;
-                                        color: var(--status-mint);
-                                    "
+                    <div class="table-responsive">
+                        <table class="data-table" style="margin-top: 8px">
+                            <thead>
+                                <tr>
+                                    <th>LAYER</th>
+                                    <th>COMPONENT</th>
+                                    <th>CHECK</th>
+                                    <th>LATENCY</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Edge WAF</td>
+                                    <td>Apache APISIX</td>
+                                    <td>OWASP SQLi/XSS</td>
+                                    <td>5ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >MINT</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Token Auth</td>
+                                    <td>Keycloak OIDC</td>
+                                    <td>JWT RS256 verify</td>
+                                    <td>8ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >MINT</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Access Auth</td>
+                                    <td>APISIX + Keycloak</td>
+                                    <td>RBAC policy matrix</td>
+                                    <td>6ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >MINT</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Audit Log</td>
+                                    <td>Grafana Loki</td>
+                                    <td>Async metadata write</td>
+                                    <td>3ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >MINT</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Encryption</td>
+                                    <td>Istio Sidecar</td>
+                                    <td>mTLS cert exchange</td>
+                                    <td>4ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >MINT</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr
+                                    style="background: var(--surface-secondary)"
                                 >
-                                    22ms
-                                </td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >OPTIMAL</span
+                                    <td style="font-weight: 700">TOTAL</td>
+                                    <td style="font-weight: 700">Full Stack</td>
+                                    <td style="font-weight: 700">End-to-End</td>
+                                    <td
+                                        style="
+                                            font-weight: 700;
+                                            color: var(--status-mint);
+                                        "
                                     >
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        22ms
+                                    </td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >OPTIMAL</span
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div style="margin-top: 12px">
                         <canvas
                             id="securityTimelineCanvas"
@@ -1845,7 +2085,7 @@
                     <div class="card-label">
                         EFFICIENTNET-B4 · AI DIAGNOSTIC PIPELINE VELOCITY
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 10px">
+                    <div class="kpi-flex" style="margin-bottom: 10px">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 1,810<span class="kpi-unit">ms</span>
@@ -1911,7 +2151,7 @@
                     <div class="card-label">
                         AI CONFIDENCE SCATTER · ANCHORING BIAS MITIGATION
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div
                                 class="kpi-value"
@@ -2131,7 +2371,7 @@
                     <div class="card-label">
                         MIRTH CONNECT · HL7 v2.3 → FHIR R4 TRANSFORMATION
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 85<span class="kpi-unit">ms</span>
@@ -2170,7 +2410,7 @@
                     <div class="card-label">
                         MASTER PATIENT INDEX · PROBABILISTIC IDENTITY RESOLUTION
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 0
@@ -2200,7 +2440,7 @@
                     <div class="card-label warn">
                         MULESOFT · SAP S/4HANA INTEGRATION BUFFER
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 20<span class="kpi-unit">ms</span>
@@ -2362,78 +2602,82 @@
                     <div class="card-label">
                         HL7 → FHIR SEGMENT MAPPING TABLE
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>HL7 SEGMENT</th>
-                                <th>FHIR R4 RESOURCE</th>
-                                <th>LATENCY</th>
-                                <th>RATE</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>MSH (Message Header)</td>
-                                <td>MessageHeader</td>
-                                <td>8ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >100%</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>PID (Patient ID)</td>
-                                <td>Patient resource</td>
-                                <td>12ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >100%</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>OBR (Observation Request)</td>
-                                <td>ServiceRequest</td>
-                                <td>18ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >99.8%</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>ORM (Order Message)</td>
-                                <td>ServiceRequest</td>
-                                <td>22ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >99.9%</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>OBX (Observation Result)</td>
-                                <td>Observation R4</td>
-                                <td>25ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >99.7%</span
-                                    >
-                                </td>
-                            </tr>
-                            <tr style="font-weight: 700">
-                                <td>TOTAL AGG</td>
-                                <td>All Transforms</td>
-                                <td style="color: var(--status-mint)">85ms</td>
-                                <td>
-                                    <span class="status-pill pill-mint"
-                                        >TARGET</span
-                                    >
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>HL7 SEGMENT</th>
+                                    <th>FHIR R4 RESOURCE</th>
+                                    <th>LATENCY</th>
+                                    <th>RATE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>MSH (Message Header)</td>
+                                    <td>MessageHeader</td>
+                                    <td>8ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >100%</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PID (Patient ID)</td>
+                                    <td>Patient resource</td>
+                                    <td>12ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >100%</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>OBR (Observation Request)</td>
+                                    <td>ServiceRequest</td>
+                                    <td>18ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >99.8%</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ORM (Order Message)</td>
+                                    <td>ServiceRequest</td>
+                                    <td>22ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >99.9%</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>OBX (Observation Result)</td>
+                                    <td>Observation R4</td>
+                                    <td>25ms</td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >99.7%</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr style="font-weight: 700">
+                                    <td>TOTAL AGG</td>
+                                    <td>All Transforms</td>
+                                    <td style="color: var(--status-mint)">
+                                        85ms
+                                    </td>
+                                    <td>
+                                        <span class="status-pill pill-mint"
+                                            >TARGET</span
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2456,7 +2700,7 @@
                     <div class="card-label">
                         K3s EDGE CLUSTER HEALTH · 32 HOSPITAL NODES
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 31
@@ -2509,7 +2753,7 @@
                     <div class="card-label">
                         CLICKHOUSE OLAP · COLUMNAR QUERY VELOCITY
                     </div>
-                    <div style="display: flex; gap: 14px; margin-bottom: 8px">
+                    <div class="kpi-flex">
                         <div>
                             <div class="kpi-value" style="font-size: 20px">
                                 0.4<span class="kpi-unit">sec</span>
